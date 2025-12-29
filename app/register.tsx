@@ -121,7 +121,7 @@ export default function RegisterScreen() {
                     activeOpacity={0.7}
                 >
                     <View style={styles.cardIconContainer}>
-                        <Ionicons name="water" size={24} color="#FFF" />
+                        <Ionicons name="person" size={24} color="#FFF" />
                     </View>
                     <View style={styles.cardTextContainer}>
                         <Text style={styles.listCardTitle}>Client</Text>
@@ -196,7 +196,7 @@ export default function RegisterScreen() {
         <View style={styles.stepContainer}>
             <View style={styles.headerStep2}>
                 <View>
-                    <Text style={styles.title}>Infos personnelles</Text>
+                    <Text style={styles.title}>Informations personnelles</Text>
                     <Text style={styles.subtitle}>Complétez votre profil {selectedRole}</Text>
                 </View>
             </View>
@@ -204,14 +204,14 @@ export default function RegisterScreen() {
             <View style={styles.formContainer}>
                 <ThemedInput
                     label="Nom complet"
-                    placeholder="nom"
+                    placeholder="Entrer votre nom"
                     value={fullName}
                     onChangeText={setFullName}
                 />
 
                 <ThemedInput
                     label="Adresse Email"
-                    placeholder="email"
+                    placeholder="Entrer votre email"
                     keyboardType="email-address"
                     autoCapitalize="none"
                     value={email}
@@ -220,7 +220,7 @@ export default function RegisterScreen() {
 
                 <ThemedInput
                     label="Mot de passe"
-                    placeholder="mot de passe"
+                    placeholder="Entrer votre mot de passe"
                     isPassword
                     value={password}
                     onChangeText={setPassword}
@@ -228,7 +228,7 @@ export default function RegisterScreen() {
 
                 <ThemedInput
                     label="Confirmer le mot de passe"
-                    placeholder="mot de passe"
+                    placeholder="Confirmer votre mot de passe"
                     isPassword
                     value={confirmPassword}
                     onChangeText={setConfirmPassword}
@@ -287,6 +287,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: Palette.background,
+        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
     },
     topBar: {
         flexDirection: 'row',
@@ -353,50 +354,6 @@ const styles = StyleSheet.create({
         marginBottom: 32,
     },
 
-    // --- Step 1: Cards ---
-    cardsContainer: {
-        marginBottom: 30,
-    },
-    roleCard: {
-        backgroundColor: Palette.cardBg,
-        borderRadius: 20,
-        padding: 20,
-        marginBottom: 16,
-        borderWidth: 2,
-        borderColor: 'transparent',
-    },
-    roleCardSelected: {
-        borderColor: Palette.primary,
-        backgroundColor: '#162836', // Légère teinte bleue
-    },
-    cardHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 12,
-    },
-    iconBox: {
-        width: 50,
-        height: 50,
-        borderRadius: 12,
-        backgroundColor: '#333',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    iconBoxSelected: {
-        backgroundColor: Palette.primary,
-    },
-    cardTitle: {
-        color: Palette.text,
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 6,
-    },
-    cardDesc: {
-        color: Palette.textGray,
-        fontSize: 14,
-        lineHeight: 20,
-    },
-
     // --- Step 2: Form ---
     headerStep2: {
         marginBottom: 10,
@@ -405,9 +362,6 @@ const styles = StyleSheet.create({
         width: '100%',
     },
 
-    buttonDisabled: {
-        opacity: 0.6,
-    },
     // --- Hero Section ---
     heroContainer: {
         alignItems: 'center',
@@ -419,7 +373,7 @@ const styles = StyleSheet.create({
         borderRadius: 50,
         borderWidth: 1,
         borderColor: '#333',
-        borderStyle: 'dashed', // Créé l'effet pointillé
+        borderStyle: 'dashed',
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 24,
@@ -435,13 +389,13 @@ const styles = StyleSheet.create({
     heroTitle: {
         fontSize: 26,
         fontWeight: 'bold',
-        color: '#FFF',
+        color: Palette.text,
         textAlign: 'center',
         marginBottom: 10,
     },
     heroSubtitle: {
         fontSize: 15,
-        color: '#A0A0A0',
+        color: Palette.textGray,
         textAlign: 'center',
         paddingHorizontal: 20,
         lineHeight: 22,
@@ -459,11 +413,11 @@ const styles = StyleSheet.create({
         padding: 16,
         marginBottom: 12,
         borderWidth: 1,
-        borderColor: 'transparent', // Bordure invisible par défaut
+        borderColor: 'transparent',
     },
     listCardSelected: {
-        borderColor: Palette.primary, // Bordure bleue si sélectionné
-        backgroundColor: '#15202B', // Légère teinte bleue fond
+        borderColor: Palette.primary,
+        backgroundColor: '#15202B',
     },
     cardIconContainer: {
         width: 40,
@@ -478,7 +432,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     listCardTitle: {
-        color: '#FFF',
+        color: Palette.text,
         fontSize: 16,
         fontWeight: '600',
         marginBottom: 4,
@@ -534,18 +488,18 @@ const styles = StyleSheet.create({
         lineHeight: 16,
     },
     continueButton: {
-        backgroundColor: '#FFF', // Bouton Blanc comme l'image
+        backgroundColor: '#FFF',
         height: 56,
         borderRadius: 28,
         justifyContent: 'center',
         alignItems: 'center',
     },
     continueButtonDisabled: {
-        backgroundColor: '#333', // Sombre si désactivé
+        backgroundColor: '#333',
         opacity: 0.5,
     },
     continueButtonText: {
-        color: '#000', // Texte noir sur bouton blanc
+        color: '#000',
         fontSize: 18,
         fontWeight: 'bold',
     },
