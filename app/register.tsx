@@ -17,6 +17,25 @@ import {
     View,
 } from 'react-native';
 
+import { z } from 'zod';
+
+const registerSchema = z.object({
+    fullName: z.string().min(2, "Le nom doit comporter au moins 2 caractères"),
+    email: z.string().email("Adresse email invalide"),
+    password: z.string().min(6, "Le mot de passe doit faire au moins 6 caractères"),
+    confirmPassword: z.string()
+}).refine((data) => data.password === data.confirmPassword, {
+    message: "Les mots de passe ne correspondent pas",
+    path: ["confirmPassword"],
+});
+
+type RegisterFormErrors = {
+    fullName?: string;
+    email?: string;
+    password?: string;
+    confirmPassword?: string;
+};
+
 export default function RegisterScreen() {
     const router = useRouter();
 
@@ -32,6 +51,7 @@ export default function RegisterScreen() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [formErrors, setFormErrors] = useState<RegisterFormErrors>({});
 
     // --- Logique de Navigation ---
 
@@ -50,13 +70,18 @@ export default function RegisterScreen() {
     };
 
     const handleRegister = () => {
-        // Validation basique
-        if (!fullName || !email || !password || !confirmPassword) {
-            Alert.alert('Erreur', 'Veuillez remplir tous les champs.');
-            return;
-        }
-        if (password !== confirmPassword) {
-            Alert.alert('Erreur', 'Les mots de passe ne correspondent pas.');
+        setFormErrors({});
+
+        // Validation Zod
+        const result = registerSchema.safeParse({ fullName, email, password, confirmPassword });
+
+        if (!result.success) {
+            const formattedErrors: RegisterFormErrors = {};
+            result.error.issues.forEach((issue) => {
+                const path = issue.path[0] as keyof RegisterFormErrors;
+                formattedErrors[path] = issue.message;
+            });
+            setFormErrors(formattedErrors);
             return;
         }
 
@@ -207,6 +232,7 @@ export default function RegisterScreen() {
                     placeholder="Entrer votre nom"
                     value={fullName}
                     onChangeText={setFullName}
+                    error={formErrors.fullName}
                 />
 
                 <ThemedInput
@@ -216,6 +242,7 @@ export default function RegisterScreen() {
                     autoCapitalize="none"
                     value={email}
                     onChangeText={setEmail}
+                    error={formErrors.email}
                 />
 
                 <ThemedInput
@@ -224,6 +251,7 @@ export default function RegisterScreen() {
                     isPassword
                     value={password}
                     onChangeText={setPassword}
+                    error={formErrors.password}
                 />
 
                 <ThemedInput
@@ -232,6 +260,7 @@ export default function RegisterScreen() {
                     isPassword
                     value={confirmPassword}
                     onChangeText={setConfirmPassword}
+                    error={formErrors.confirmPassword}
                 />
 
                 {/* Bouton Submit */}

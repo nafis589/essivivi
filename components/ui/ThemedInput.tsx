@@ -7,9 +7,10 @@ interface ThemedInputProps extends TextInputProps {
     label: string;
     containerStyle?: StyleProp<ViewStyle>;
     isPassword?: boolean;
+    error?: string;
 }
 
-export function ThemedInput({ label, containerStyle, isPassword = false, ...props }: ThemedInputProps) {
+export function ThemedInput({ label, containerStyle, isPassword = false, error, ...props }: ThemedInputProps) {
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
     return (
@@ -17,7 +18,8 @@ export function ThemedInput({ label, containerStyle, isPassword = false, ...prop
             <Text style={styles.label}>{label}</Text>
             <View style={[
                 styles.inputContainerBase,
-                isPassword ? styles.passwordContainer : styles.textInput
+                isPassword ? styles.passwordContainer : styles.textInput,
+                error ? styles.inputError : null
             ]}>
                 <TextInput
                     style={[styles.inputBase, styles.flexInput]}
@@ -39,6 +41,9 @@ export function ThemedInput({ label, containerStyle, isPassword = false, ...prop
                     </TouchableOpacity>
                 )}
             </View>
+            {error ? (
+                <Text style={styles.errorText}>{error}</Text>
+            ) : null}
         </View>
     );
 }
@@ -59,6 +64,15 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: Palette.border,
         height: 56,
+    },
+    inputError: {
+        borderColor: Palette.error,
+    },
+    errorText: {
+        color: Palette.error,
+        fontSize: 12,
+        marginTop: 4,
+        marginLeft: 4,
     },
     textInput: {
         justifyContent: 'center',

@@ -18,9 +18,17 @@ import {
     TouchableWithoutFeedback,
     View
 } from 'react-native';
+import { z } from 'zod';
 
+const loginSchema = z.object({
+    phone: z.string().min(1, "Le numéro de téléphone est requis").regex(/^\d{10}$/, "Le numéro doit comporter 10 chiffres"),
+    password: z.string().min(1, "Le mot de passe est requis"),
+});
 
-
+type LoginFormErrors = {
+    phone?: string;
+    password?: string;
+};
 
 export default function LoginScreen() {
 
@@ -30,7 +38,8 @@ export default function LoginScreen() {
     const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
+    const [formErrors, setFormErrors] = useState<LoginFormErrors>({});
+    const [globalError, setGlobalError] = useState('');
     const [rememberMe, setRememberMe] = useState(false);
 
     const [fontsLoaded] = useFonts({
@@ -46,12 +55,20 @@ export default function LoginScreen() {
     // --- Logique (Mockée) ---
     const handleLogin = () => {
         // Reset des erreurs
-        setErrorMessage('');
+        setFormErrors({});
+        setGlobalError('');
         Keyboard.dismiss();
 
-        // Validation basique
-        if (!phone || !password) {
-            setErrorMessage('Veuillez remplir tous les champs.');
+        // Validation Zod
+        const result = loginSchema.safeParse({ phone, password });
+
+        if (!result.success) {
+            const formattedErrors: LoginFormErrors = {};
+            result.error.issues.forEach((issue) => {
+                const path = issue.path[0] as keyof LoginFormErrors;
+                formattedErrors[path] = issue.message;
+            });
+            setFormErrors(formattedErrors);
             return;
         }
 
@@ -101,6 +118,7 @@ export default function LoginScreen() {
                             keyboardType="phone-pad"
                             value={phone}
                             onChangeText={setPhone}
+                            error={formErrors.phone}
                         />
 
                         <ThemedInput
@@ -109,6 +127,7 @@ export default function LoginScreen() {
                             isPassword
                             value={password}
                             onChangeText={setPassword}
+                            error={formErrors.password}
                         />
 
                         {/* Remember Me & Forgot Password */}
@@ -128,11 +147,11 @@ export default function LoginScreen() {
                             </TouchableOpacity>
                         </View>
 
-                        {/* Message d'erreur */}
-                        {errorMessage ? (
+                        {/* Message d'erreur global si besoin (API error) */}
+                        {globalError ? (
                             <View style={styles.errorContainer}>
                                 <Ionicons name="alert-circle" size={20} color={Palette.error} />
-                                <Text style={styles.errorText}>{errorMessage}</Text>
+                                <Text style={styles.errorText}>{globalError}</Text>
                             </View>
                         ) : null}
 
