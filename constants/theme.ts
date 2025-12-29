@@ -27,6 +27,17 @@ export const Colors = {
   },
 };
 
+export const Palette = {
+  background: '#121212',       // Fond sombre
+  cardBg: '#1E1E1E',           // Fond des inputs
+  primary: '#0EA5E9',          // Bleu Océan
+  primaryPressed: '#0284C7',   // Bleu plus foncé au clic
+  text: '#FFFFFF',             // Texte principal
+  textGray: '#A1A1AA',         // Texte secondaire
+  error: '#EF4444',            // Rouge pour les erreurs
+  border: '#333333',           // Bordures subtiles
+};
+
 export const Fonts = Platform.select({
   ios: {
     /** iOS `UIFontDescriptorSystemDesignDefault` */
