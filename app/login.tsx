@@ -101,6 +101,12 @@ export default function LoginScreen() {
                     keyboardShouldPersistTaps="handled"
                     showsVerticalScrollIndicator={false}
                 >
+                    {/* --- Header / Back Button --- */}
+                    <View style={styles.header}>
+                        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+                            <Ionicons name="arrow-back" size={24} color={Palette.text} />
+                        </TouchableOpacity>
+                    </View>
 
 
                     {/* --- Titres --- */}
@@ -190,8 +196,14 @@ const styles = StyleSheet.create({
     },
     // Header
     header: {
-        marginBottom: 40,
-        marginTop: 20,
+        marginBottom: 20, // Reduced margin since back button takes space
+        marginTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+        alignSelf: 'flex-start',
+    },
+    backButton: {
+        padding: 8,
+        marginLeft: -8,
+        marginBottom: 10,
     },
     logoContainer: {
         flexDirection: 'row',
