@@ -1,3 +1,4 @@
+import { Palette } from '@/constants/theme';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
@@ -17,7 +18,7 @@ export default function WelcomeScreen() {
                 <Text style={styles.logo}>essivivi</Text>
                 <Text style={styles.title}>Bienvenue!</Text>
                 <Text style={styles.subtitle}>
-                    Quickly navigate and easily pay for public transport in Belgrade
+                    Suivez et gérez efficacement vos livraisons d’eau quotidiennes.
                 </Text>
             </View>
 
@@ -25,22 +26,22 @@ export default function WelcomeScreen() {
             <View style={styles.graphicContainer}>
                 {/* Lignes en pointillés (Décoration) */}
                 <View style={[styles.bubble, styles.bubbleTopLeft]}>
-                    <Ionicons name="location-sharp" size={28} color="#0024D1" />
+                    <Ionicons name="location-sharp" size={28} color={Palette.primary} />
                 </View>
 
                 {/* Haut Droite - Navigation */}
                 <View style={[styles.bubble, styles.bubbleTopRight]}>
-                    <Ionicons name="navigate" size={26} color="#0024D1" style={{ transform: [{ rotate: '45deg' }] }} />
+                    <Ionicons name="navigate" size={26} color={Palette.primary} style={{ transform: [{ rotate: '45deg' }] }} />
                 </View>
 
                 {/* Bas Gauche - Paiement */}
                 <View style={[styles.bubble, styles.bubbleBottomLeft]}>
-                    <Ionicons name="card" size={26} color="#0024D1" />
+                    <Ionicons name="card" size={26} color={Palette.primary} />
                 </View>
 
                 {/* Bas Droite - Favori */}
                 <View style={[styles.bubble, styles.bubbleBottomRight]}>
-                    <Ionicons name="star" size={26} color="#0024D1" />
+                    <Ionicons name="star" size={26} color={Palette.primary} />
                 </View>
             </View>
 
@@ -89,7 +90,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     logo: {
-        color: '#0024D1', // Bleu GPB
+        color: Palette.primary, // Bleu GPB
         fontSize: 28,
         fontWeight: '900',
         marginBottom: 16,
@@ -184,13 +185,13 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     primaryButton: {
-        backgroundColor: '#0024D1', // Bleu principal
+        backgroundColor: Palette.primary, // Bleu principal
         width: '100%',
         paddingVertical: 18,
         borderRadius: 30,
         alignItems: 'center',
         marginBottom: 16,
-        shadowColor: "#0024D1",
+        shadowColor: Palette.primary,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.2,
         shadowRadius: 8,
@@ -208,10 +209,10 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: '#0024D1',
+        borderColor: Palette.primary,
     },
     secondaryButtonText: {
-        color: '#0024D1',
+        color: Palette.primary,
         fontSize: 16,
         fontWeight: '600',
     },

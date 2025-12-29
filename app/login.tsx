@@ -95,19 +95,19 @@ export default function LoginScreen() {
         <SafeAreaView style={styles.container}>
             <StatusBar barStyle="light-content" backgroundColor={Palette.background} />
 
+            {/* --- Header / Back Button (Top Level) --- */}
+            <View style={styles.header}>
+                <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+                    <Ionicons name="arrow-back" size={24} color={Palette.text} />
+                </TouchableOpacity>
+            </View>
+
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <ScrollView
                     contentContainerStyle={styles.innerContainer}
                     keyboardShouldPersistTaps="handled"
                     showsVerticalScrollIndicator={false}
                 >
-                    {/* --- Header / Back Button --- */}
-                    <View style={styles.header}>
-                        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                            <Ionicons name="arrow-back" size={24} color={Palette.text} />
-                        </TouchableOpacity>
-                    </View>
-
 
                     {/* --- Titres --- */}
                     <View style={styles.titleContainer}>
@@ -188,17 +188,18 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: Palette.background,
+        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
     },
     innerContainer: {
-        flex: 1,
+        flexGrow: 1,
         paddingHorizontal: 24,
-        justifyContent: 'center',
+        paddingTop: 20, // Add padding because header is now outside
     },
     // Header
     header: {
-        marginBottom: 20, // Reduced margin since back button takes space
-        marginTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
-        alignSelf: 'flex-start',
+        paddingHorizontal: 24,
+        paddingVertical: 10,
+        // No margin top needed here as it's handled by container padding
     },
     backButton: {
         padding: 8,

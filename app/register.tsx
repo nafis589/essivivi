@@ -129,7 +129,7 @@ export default function RegisterScreen() {
                 </View>
                 <Text style={styles.heroTitle}>Créer un compte</Text>
                 <Text style={styles.heroSubtitle}>
-                    Sélectionnez votre profil pour commencer l'expérience HydroLogistics.
+                    Sélectionnez votre profil pour commencer l'expérience sur essivivi.
                 </Text>
             </View>
 
