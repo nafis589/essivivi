@@ -1,0 +1,321 @@
+import { Palette } from '@/constants/theme';
+import { Dimensions, Platform, StatusBar, StyleSheet } from 'react-native';
+
+const { width } = Dimensions.get('window');
+
+export const COLORS = {
+    primary: Palette.primary,
+    dark: '#1E1E1E',          // Garder la carte dashboard sombre pour le contraste
+    background: '#FFFFFF',    // Fond blanc demandé
+    cardText: '#FFFFFF',
+    textMain: '#1A1A1A',      // Texte sombre pour fond blanc
+    textSec: '#666666',
+    accent: '#FFC107',
+    danger: Palette.error,
+    lightGray: '#F5F5F5',
+};
+
+export const dashboardStyles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: COLORS.background,
+        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+    },
+
+    // --- Header ---
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        paddingTop: 10,
+        marginBottom: 20,
+    },
+    profileContainer: {},
+    avatar: {
+        width: 45,
+        height: 45,
+        borderRadius: 22.5,
+        borderWidth: 2,
+        borderColor: '#F0F0F0',
+    },
+    logoContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    logoText: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginLeft: 5,
+        color: COLORS.textMain,
+    },
+    notificationBtn: {
+        padding: 5,
+        position: 'relative',
+    },
+    badge: {
+        position: 'absolute',
+        top: 4,
+        right: 4,
+        backgroundColor: COLORS.danger,
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+        borderWidth: 1,
+        borderColor: '#FFF',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    badgeText: {
+        color: '#FFF',
+        fontSize: 6,
+        fontWeight: 'bold',
+    },
+
+    // --- Main Card (Green/Teal) ---
+    mainCard: {
+        backgroundColor: COLORS.primary,
+        marginHorizontal: 20,
+        borderRadius: 30,
+        height: 180,
+        overflow: 'hidden',
+        padding: 20,
+        position: 'relative',
+        marginBottom: 20,
+        elevation: 5,
+        shadowColor: COLORS.primary,
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.3,
+        shadowRadius: 15,
+    },
+    bgPatternCircle: {
+        position: 'absolute',
+        top: -50,
+        right: -50,
+        width: 200,
+        height: 200,
+        borderRadius: 100,
+        borderWidth: 2,
+        borderColor: 'rgba(255,255,255,0.1)',
+    },
+    mainCardContent: {
+        flexDirection: 'row',
+        height: '100%',
+        alignItems: 'center',
+    },
+    mainCardTitle: {
+        fontSize: 22,
+        fontWeight: '800',
+        color: '#004D40', // Vert très foncé pour contraste
+        marginBottom: 5,
+    },
+    mainCardSubtitle: {
+        fontSize: 13,
+        color: '#004D40',
+        opacity: 0.8,
+        marginBottom: 20,
+        paddingRight: 10,
+    },
+    actionBtn: {
+        backgroundColor: '#004D40',
+        paddingVertical: 12,
+        paddingHorizontal: 20,
+        borderRadius: 15,
+        alignSelf: 'flex-start',
+    },
+    actionBtnStop: {
+        backgroundColor: COLORS.danger,
+    },
+    actionBtnText: {
+        color: '#FFF',
+        fontWeight: 'bold',
+        fontSize: 14,
+    },
+    stickerContainer: {
+        width: 100,
+        height: 100,
+        justifyContent: 'center',
+        alignItems: 'center',
+        // Effet "Sticker" blanc autour de l'image
+        backgroundColor: '#FFF',
+        borderRadius: 20,
+        transform: [{ rotate: '5deg' }], // Petite rotation dynamique comme sur l'image
+        elevation: 5,
+    },
+    stickerImage: {
+        width: 90,
+        height: 90,
+        borderRadius: 15,
+    },
+
+    // --- Dashboard Card (Dark) ---
+    dashboardCard: {
+        backgroundColor: COLORS.dark,
+        marginHorizontal: 20,
+        borderRadius: 30,
+        padding: 20,
+        marginBottom: 25,
+    },
+    dashboardRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    progressContainer: {
+        alignItems: 'center',
+        width: '35%',
+    },
+    progressCircle: {
+        width: 70,
+        height: 70,
+        borderRadius: 35,
+        borderWidth: 3,
+        borderColor: COLORS.primary,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 8,
+    },
+    driverName: {
+        color: '#FFF',
+        fontWeight: '600',
+        fontSize: 14,
+    },
+    statsGrid: {
+        width: '60%',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+    },
+    statBadge: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 10,
+        paddingHorizontal: 12,
+        borderRadius: 20,
+        width: '48%', // Pour faire 2 colonnes
+        marginBottom: 8,
+    },
+    statValue: {
+        marginLeft: 8,
+        fontWeight: 'bold',
+        fontSize: 12,
+    },
+
+    // --- List Section ---
+    sectionHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        marginBottom: 15,
+    },
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: '800',
+        color: COLORS.textMain,
+    },
+    seeAllText: {
+        fontSize: 14,
+        color: COLORS.textSec,
+        fontWeight: '600',
+    },
+    listItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        marginBottom: 20,
+    },
+    listIconContainer: {
+        position: 'relative',
+    },
+    clientAvatar: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        backgroundColor: '#F0F0F0',
+    },
+    listBadgeIcon: {
+        position: 'absolute',
+        bottom: 0,
+        right: 0,
+        backgroundColor: COLORS.primary,
+        width: 20,
+        height: 20,
+        borderRadius: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 1.5,
+        borderColor: '#FFF',
+    },
+    listContent: {
+        flex: 1,
+        marginLeft: 15,
+    },
+    clientName: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: COLORS.textMain,
+    },
+    listDate: {
+        fontSize: 13,
+        color: COLORS.textSec,
+        marginTop: 4,
+    },
+    listBtn: {
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: '#E0E0E0',
+    },
+    listBtnText: {
+        fontSize: 13,
+        fontWeight: '700',
+        color: COLORS.textMain,
+    },
+
+    // --- Bottom Navigation (Custom) ---
+    bottomNavWrapper: {
+        position: 'absolute',
+        bottom: 30,
+        width: '100%',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+    },
+    bottomNavContainer: {
+        flexDirection: 'row',
+        backgroundColor: COLORS.dark, // Fond sombre (CardBg)
+        width: '100%',
+        height: 70,
+        borderRadius: 35, // Pilule très arrondie
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        paddingHorizontal: 10,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.25,
+        shadowRadius: 10,
+        elevation: 8,
+    },
+    navItem: {
+        padding: 10,
+    },
+    navMainAction: {
+        top: -20, // Effet surélevé
+        shadowColor: COLORS.primary,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.4,
+        shadowRadius: 10,
+        elevation: 10,
+    },
+    navMainCircle: {
+        width: 64,
+        height: 64,
+        borderRadius: 32,
+        backgroundColor: COLORS.primary,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 4,
+        borderColor: '#FFF', // Bordure blanche pour séparer du fond noir
+    },
+});

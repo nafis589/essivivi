@@ -1,46 +1,33 @@
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { ThemedInput } from '@/components/ui/ThemedInput';
 import { Palette } from '@/constants/theme';
+import { useLogin } from '@/features/auth/hooks/useLogin';
 import { Poppins_700Bold, useFonts } from '@expo-google-fonts/poppins';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React from 'react';
 import {
-    Alert,
     Keyboard,
-    Platform,
     SafeAreaView,
     ScrollView,
     StatusBar,
-    StyleSheet,
     Text,
     TouchableOpacity,
     TouchableWithoutFeedback,
     View
 } from 'react-native';
-import { z } from 'zod';
-
-const loginSchema = z.object({
-    phone: z.string().min(1, "Le numéro de téléphone est requis").regex(/^\d{10}$/, "Le numéro doit comporter 10 chiffres"),
-    password: z.string().min(1, "Le mot de passe est requis"),
-});
-
-type LoginFormErrors = {
-    phone?: string;
-    password?: string;
-};
 
 export default function LoginScreen() {
-
-    const router = useRouter();
-
-    // --- États (State) ---
-    const [phone, setPhone] = useState('');
-    const [password, setPassword] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const [formErrors, setFormErrors] = useState<LoginFormErrors>({});
-    const [globalError, setGlobalError] = useState('');
-    const [rememberMe, setRememberMe] = useState(false);
+    const {
+        phone, setPhone,
+        password, setPassword,
+        rememberMe, setRememberMe,
+        isLoading,
+        formErrors,
+        globalError,
+        handleLogin,
+        goBack,
+        goToRegister
+    } = useLogin();
 
     const [fontsLoaded] = useFonts({
         PoppinsBold: Poppins_700Bold,
@@ -52,52 +39,13 @@ export default function LoginScreen() {
         );
     }
 
-    // --- Logique (Mockée) ---
-    const handleLogin = () => {
-        // Reset des erreurs
-        setFormErrors({});
-        setGlobalError('');
-        Keyboard.dismiss();
-
-        // Validation Zod
-        const result = loginSchema.safeParse({ phone, password });
-
-        if (!result.success) {
-            const formattedErrors: LoginFormErrors = {};
-            result.error.issues.forEach((issue) => {
-                const path = issue.path[0] as keyof LoginFormErrors;
-                formattedErrors[path] = issue.message;
-            });
-            setFormErrors(formattedErrors);
-            return;
-        }
-
-        // Simulation Appel API
-        setIsLoading(true);
-
-        setTimeout(() => {
-            setIsLoading(false);
-            // Mock de succès ou échec
-            if (phone === '0102030405' && password === '1234') {
-                Alert.alert('Succès', 'Connexion réussie ! Bienvenue sur la tournée.', [
-                    { text: 'OK', onPress: () => router.replace('/(tabs)') }
-                ]);
-            } else {
-                // En mode démo, on redirige quand même pour que l'utilisateur puisse tester
-                Alert.alert('Bienvenue', `Livreur connecté : ${phone} (Démo)`, [
-                    { text: 'GO', onPress: () => router.replace('/(tabs)') }
-                ]);
-            }
-        }, 2000);
-    };
-
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar barStyle="light-content" backgroundColor={Palette.background} />
 
             {/* --- Header / Back Button (Top Level) --- */}
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+                <TouchableOpacity onPress={goBack} style={styles.backButton}>
                     <Ionicons name="arrow-back" size={24} color={Palette.text} />
                 </TouchableOpacity>
             </View>
@@ -173,7 +121,7 @@ export default function LoginScreen() {
                     {/* --- Footer --- */}
                     <View style={styles.footer}>
                         <Text style={styles.footerText}>Pas encore de compte ? </Text>
-                        <TouchableOpacity onPress={() => router.push('/register')}>
+                        <TouchableOpacity onPress={goToRegister}>
                             <Text style={styles.signupText}>S'inscrire</Text>
                         </TouchableOpacity>
                     </View>
@@ -184,129 +132,5 @@ export default function LoginScreen() {
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: Palette.background,
-        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
-    },
-    innerContainer: {
-        flexGrow: 1,
-        paddingHorizontal: 24,
-        paddingTop: 20, // Add padding because header is now outside
-    },
-    // Header
-    header: {
-        paddingHorizontal: 24,
-        paddingVertical: 10,
-        // No margin top needed here as it's handled by container padding
-    },
-    backButton: {
-        padding: 8,
-        marginLeft: -8,
-        marginBottom: 10,
-    },
-    logoContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    logoImage: {
-        width: 64,
-        height: 64,
-        marginBottom: 8,
-    },
-    logoText: {
-        fontSize: 28,
-        fontWeight: '700',
-        letterSpacing: 2.5,
-        color: Palette.text,
+import { loginStyles as styles } from '@/features/auth/styles/login.styles';
 
-        // Helvetica avec fallback propre
-        fontFamily: Platform.select({
-            ios: 'Helvetica Neue',
-            android: 'sans-serif-medium',
-        }),
-    },
-    // Titres
-    titleContainer: {
-        marginBottom: 32,
-    },
-    title: {
-        fontSize: 30,
-        fontWeight: 'bold',
-        color: Palette.text,
-        marginBottom: 8,
-    },
-    subtitle: {
-        fontSize: 16,
-        color: Palette.textGray,
-        fontWeight: '400',
-    },
-    // Inputs
-    formContainer: {
-        width: '100%',
-    },
-    // Options (Checkbox / Forgot)
-    optionsRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 32,
-    },
-    checkboxContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    checkbox: {
-        width: 20,
-        height: 20,
-        borderRadius: 6,
-        borderWidth: 2,
-        borderColor: Palette.textGray,
-        marginRight: 8,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    checkboxChecked: {
-        backgroundColor: Palette.primary,
-        borderColor: Palette.primary,
-    },
-    optionText: {
-        color: Palette.textGray,
-        fontSize: 14,
-    },
-    forgotText: {
-        color: Palette.text,
-        fontWeight: '600',
-        fontSize: 14,
-        textDecorationLine: 'underline',
-    },
-    // Error
-    errorContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 16,
-        padding: 10,
-    },
-    errorText: {
-        color: Palette.error,
-        marginLeft: 8,
-        fontSize: 14,
-    },
-    // Footer
-    footer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        marginTop: 40,
-        marginBottom: 20,
-    },
-    footerText: {
-        color: Palette.textGray,
-        fontSize: 14,
-    },
-    signupText: {
-        color: Palette.text,
-        fontWeight: 'bold',
-        fontSize: 14,
-    },
-});
