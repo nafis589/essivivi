@@ -34,28 +34,18 @@ export default function RegisterScreen() {
     // --- Rendu Barre de progression ---
     const renderProgressBar = () => (
         <View style={styles.progressContainer}>
-            <View style={styles.progressTrack}>
-                <View style={[styles.progressBar, { width: step === 1 ? '50%' : '100%' }]} />
-            </View>
-            <Text style={styles.stepText}>Étape {step} sur 2</Text>
+            <View style={[styles.progressStep, step >= 1 && styles.progressActive]} />
+            <View style={[styles.progressStep, step >= 2 && styles.progressActive]} />
         </View>
     );
 
     // --- Rendu Étape 1 : Choix Rôle ---
     const renderStep1 = () => (
         <View style={styles.stepContainer}>
-
-            {/* --- 1. Hero Section (Icône centrale avec pointillés) --- */}
-            <View style={styles.heroContainer}>
-                <View style={styles.dashedCircle}>
-                    <View style={styles.innerCircle}>
-                        {/* Icône qui change selon la sélection ou icône générique */}
-                        <Ionicons
-                            name={selectedRole === 'livreur' ? "bicycle" : "person"}
-                            size={40}
-                            color="#FFF"
-                        />
-                    </View>
+            {/* Hero Section */}
+            <View style={styles.heroSection}>
+                <View style={styles.heroCircle}>
+                    <Ionicons name="people" size={40} color={Palette.primary} />
                 </View>
                 <Text style={styles.heroTitle}>Créer un compte</Text>
                 <Text style={styles.heroSubtitle}>
@@ -63,86 +53,66 @@ export default function RegisterScreen() {
                 </Text>
             </View>
 
-            {/* --- 2. Vertical List Cards --- */}
+            {/* Cartes de sélection */}
             <View style={styles.cardsList}>
-
                 {/* Carte Client */}
                 <TouchableOpacity
-                    style={[
-                        styles.listCard,
-                        selectedRole === 'client' && styles.listCardSelected
-                    ]}
+                    style={[styles.listCard, selectedRole === 'client' && styles.listCardSelected]}
                     onPress={() => setSelectedRole('client')}
-                    activeOpacity={0.7}
+                    activeOpacity={0.8}
                 >
-                    <View style={styles.cardIconContainer}>
-                        <Ionicons name="person" size={24} color="#FFF" />
+                    <View style={[styles.iconBox, selectedRole === 'client' && styles.iconBoxSelected]}>
+                        <Ionicons
+                            name="person"
+                            size={24}
+                            color={selectedRole === 'client' ? '#FFF' : Palette.text}
+                        />
                     </View>
-                    <View style={styles.cardTextContainer}>
-                        <Text style={styles.listCardTitle}>Client</Text>
-                        <Text style={styles.listCardDesc}>Commander de l'eau et suivre vos livraisons.</Text>
+                    <View style={styles.cardContent}>
+                        <Text style={styles.cardTitle}>Je suis Client</Text>
+                        <Text style={styles.cardDesc}>Je commande de l'eau</Text>
                     </View>
-                    {/* Radio Button / Checkmark à droite */}
-                    <View style={styles.radioContainer}>
-                        {selectedRole === 'client' ? (
-                            <Ionicons name="checkmark-circle" size={24} color={Palette.primary} />
-                        ) : (
-                            <View style={styles.radioEmpty} />
-                        )}
+                    <View style={styles.radioButton}>
+                        {selectedRole === 'client' && <View style={styles.radioInner} />}
                     </View>
                 </TouchableOpacity>
 
                 {/* Carte Livreur */}
                 <TouchableOpacity
-                    style={[
-                        styles.listCard,
-                        selectedRole === 'livreur' && styles.listCardSelected
-                    ]}
+                    style={[styles.listCard, selectedRole === 'livreur' && styles.listCardSelected]}
                     onPress={() => setSelectedRole('livreur')}
-                    activeOpacity={0.7}
+                    activeOpacity={0.8}
                 >
-                    <View style={styles.cardIconContainer}>
-                        <Ionicons name="bicycle" size={24} color="#FFF" />
+                    <View style={[styles.iconBox, selectedRole === 'livreur' && styles.iconBoxSelected]}>
+                        <Ionicons
+                            name="bicycle"
+                            size={24}
+                            color={selectedRole === 'livreur' ? '#FFF' : Palette.text}
+                        />
                     </View>
-                    <View style={styles.cardTextContainer}>
-                        <Text style={styles.listCardTitle}>Livreur</Text>
-                        <Text style={styles.listCardDesc}>Effectuer des livraisons et gérer vos tournées.</Text>
+                    <View style={styles.cardContent}>
+                        <Text style={styles.cardTitle}>Je suis Livreur</Text>
+                        <Text style={styles.cardDesc}>Je livre les commandes</Text>
                     </View>
-                    <View style={styles.radioContainer}>
-                        {selectedRole === 'livreur' ? (
-                            <Ionicons name="checkmark-circle" size={24} color={Palette.primary} />
-                        ) : (
-                            <View style={styles.radioEmpty} />
-                        )}
+                    <View style={styles.radioButton}>
+                        {selectedRole === 'livreur' && <View style={styles.radioInner} />}
                     </View>
                 </TouchableOpacity>
             </View>
 
-            {/* --- 3. Footer Section (Info + Button) --- */}
             <View style={styles.footerContainer}>
-
-                {/* Note de sécurité (Comme le "All photos..." sur l'image) */}
                 <View style={styles.securityNote}>
-                    <Ionicons name="lock-closed" size={16} color="#666" style={{ marginRight: 8 }} />
-                    <Text style={styles.securityText}>
-                        Vos données personnelles sont chiffrées et sécurisées.
-                    </Text>
-                    <Ionicons name="chevron-forward" size={16} color="#666" style={{ marginLeft: 'auto' }} />
+                    <Ionicons name="shield-checkmark-outline" size={16} color={Palette.primary} />
+                    <Text style={styles.securityText}>Vos données sont sécurisées</Text>
                 </View>
 
-                {/* Bouton "Continue" (Style blanc pillule comme l'image) */}
-                <TouchableOpacity
-                    style={[
-                        styles.continueButton,
-                        !selectedRole && styles.continueButtonDisabled
-                    ]}
+                {/* Bouton Continuer */}
+                <PrimaryButton
+                    title="Continuer"
                     onPress={handleNextStep}
                     disabled={!selectedRole}
-                >
-                    <Text style={styles.continueButtonText}>Continuer</Text>
-                </TouchableOpacity>
+                />
             </View>
-
         </View>
     );
 
@@ -151,7 +121,7 @@ export default function RegisterScreen() {
         <View style={styles.stepContainer}>
             <View style={styles.headerStep2}>
                 <View>
-                    <Text style={styles.title}>Informations personnelles</Text>
+                    <Text style={styles.title}>Infos personnelles</Text>
                     <Text style={styles.subtitle}>Complétez votre profil {selectedRole}</Text>
                 </View>
             </View>

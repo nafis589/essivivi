@@ -159,11 +159,12 @@ export const dashboardStyles = StyleSheet.create({
     dashboardRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
     },
     progressContainer: {
+        width: 90,                // largeur fixe = layout stable
         alignItems: 'center',
-        width: '35%',
+        justifyContent: 'center',
+        marginRight: 14,
     },
     progressCircle: {
         width: 70,
@@ -173,32 +174,58 @@ export const dashboardStyles = StyleSheet.create({
         borderColor: COLORS.primary,
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 8,
     },
     driverName: {
         color: '#FFF',
         fontWeight: '600',
         fontSize: 14,
     },
-    statsGrid: {
-        width: '60%',
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
+    statsContainer: {
+        flex: 1,                  // prend tout l’espace restant
+        justifyContent: 'center',
     },
-    statBadge: {
+    // --- Dashboard Stats (New) ---
+    statsGrid: {
         flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        width: '100%',
+    },
+    statItem: {
         alignItems: 'center',
-        paddingVertical: 10,
-        paddingHorizontal: 12,
-        borderRadius: 20,
-        width: '48%', // Pour faire 2 colonnes
+        flex: 1,
+    },
+    statIconContainer: {
+        width: 44,
+        height: 44,
+        justifyContent: 'center',
+        alignItems: 'center',
         marginBottom: 8,
     },
+    statIconContainerActive: {
+        borderColor: COLORS.primary,
+    },
     statValue: {
-        marginLeft: 8,
-        fontWeight: 'bold',
-        fontSize: 12,
+        color: '#FFFFFF',
+        fontSize: 15,
+        fontWeight: '700',
+        marginBottom: 2,
+        textAlign: 'center',
+    },
+    statLabel: {
+        color: '#999999',
+        fontSize: 11,
+        textAlign: 'center',
+        fontWeight: '500',
+    },
+    statValueInactive: {
+        color: '#666', // Dimmed value
+    },
+    illustrationImage: {
+        width: 100,
+        height: 100,
+        resizeMode: 'contain',
+        // Placeholder background to make it visible until you insert your SVG/Image
     },
 
     // --- List Section ---
@@ -318,4 +345,16 @@ export const dashboardStyles = StyleSheet.create({
         borderWidth: 4,
         borderColor: '#FFF', // Bordure blanche pour séparer du fond noir
     },
+    bottomStatsRow: {
+        flexDirection: 'row',
+        gap: 8,
+        marginTop: 10,
+    },
+
+    flexBadge: {
+        flex: 1,
+        backgroundColor: '#1E2D3B',
+        justifyContent: 'center',
+    }
+
 });

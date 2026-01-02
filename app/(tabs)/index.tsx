@@ -81,39 +81,56 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* --- DASHBOARD CARD (Le "Noir" de l'image) --- */}
+        {/* --- DASHBOARD QUICK STATS --- */}
         <View style={styles.dashboardCard}>
-          <View style={styles.dashboardRow}>
+          <View style={styles.statsGrid}>
 
-            {/* Jauge circulaire (Gauche) */}
-            <View style={styles.progressContainer}>
-              <View style={styles.progressCircle}>
-                <MaterialCommunityIcons name="water-percent" size={32} color={COLORS.primary} />
+            {/* 1. Montant */}
+            <View style={styles.statItem}>
+              <View style={styles.statIconContainer}>
+                <MaterialCommunityIcons name="cash-multiple" size={25} color="#FFF" />
               </View>
-              <Text style={styles.driverName}>Michel D.</Text>
+              <Text style={[styles.statValue, !isTourActive && styles.statValueInactive]}>
+                {isTourActive ? '36 000' : '—'}
+              </Text>
+              <Text style={styles.statLabel}>Montant</Text>
             </View>
 
-            {/* Grille de stats (Droite) */}
-            <View style={styles.statsGrid}>
-              {/* Stat 1 : Chargement */}
-              <View style={[styles.statBadge, { backgroundColor: '#2C2C2E' }]}>
-                <MaterialCommunityIcons name="bottle-soda" size={18} color="#FFD700" />
-                <Text style={[styles.statValue, { color: '#FFD700' }]}>120 Btl</Text>
+            {/* 2. Livraisons */}
+            <View style={styles.statItem}>
+              <View style={styles.statIconContainer}>
+                <MaterialCommunityIcons name="package-variant-closed" size={25} color="#FFF" />
               </View>
+              <Text style={[styles.statValue, !isTourActive && styles.statValueInactive]}>
+                {isTourActive ? '8' : '0'}
+              </Text>
+              <Text style={styles.statLabel}>Livraisons</Text>
+            </View>
 
-              {/* Stat 2 : Distance */}
-              <View style={[styles.statBadge, { backgroundColor: '#2C2C2E' }]}>
-                <MaterialCommunityIcons name="map-marker-distance" size={18} color="#A4E638" />
-                <Text style={[styles.statValue, { color: '#A4E638' }]}>3.5 km</Text>
+            {/* 3. Activité */}
+            <View style={styles.statItem}>
+              <View style={styles.statIconContainer}>
+                <Ionicons name="time-outline" size={25} color="#FFF" />
               </View>
+              <Text style={[styles.statValue, !isTourActive && styles.statValueInactive]}>
+                {isTourActive ? '1h 15' : '—'}
+              </Text>
+              <Text style={styles.statLabel}>Activité</Text>
+            </View>
 
-              {/* Stat 3 : Temps */}
-              <View style={[styles.statBadge, { backgroundColor: '#1E2D3B', width: '100%', marginTop: 10 }]}>
-                <Ionicons name="time" size={18} color="#4DAFFF" />
-                <Text style={[styles.statValue, { color: '#4DAFFF' }]}>
-                  {isTourActive ? '1h 15m en route' : '0h 00m'}
-                </Text>
+            {/* 4. GPS */}
+            <View style={styles.statItem}>
+              <View style={[styles.statIconContainer, isTourActive && styles.statIconContainerActive]}>
+                <MaterialCommunityIcons
+                  name="crosshairs-gps"
+                  size={25}
+                  color={isTourActive ? '#FFF' : '#666'}
+                />
               </View>
+              <Text style={[styles.statValue, !isTourActive && styles.statValueInactive]}>
+                {isTourActive ? 'Actif' : 'Inactif'}
+              </Text>
+              <Text style={styles.statLabel}>GPS</Text>
             </View>
 
           </View>

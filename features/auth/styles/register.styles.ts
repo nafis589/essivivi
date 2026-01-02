@@ -37,51 +37,36 @@ export const registerStyles = StyleSheet.create({
 
     // --- Progress Bar ---
     progressContainer: {
+        flexDirection: 'row',
         paddingHorizontal: 24,
         marginBottom: 30,
         marginTop: 10,
     },
-    progressTrack: {
-        height: 6,
-        backgroundColor: Palette.cardBg,
-        borderRadius: 3,
-        marginBottom: 8,
-        overflow: 'hidden',
+    progressStep: {
+        flex: 1,
+        height: 4,
+        backgroundColor: '#2C2C2E',
+        marginHorizontal: 2,
+        borderRadius: 2,
     },
-    progressBar: {
-        height: '100%',
+    progressActive: {
         backgroundColor: Palette.primary,
-        borderRadius: 3,
-    },
-    stepText: {
-        color: Palette.textGray,
-        fontSize: 12,
-        alignSelf: 'flex-end',
     },
 
     // --- Hero Section ---
-    heroContainer: {
+    heroSection: {
         alignItems: 'center',
-        marginBottom: 30,
+        marginBottom: 40,
+        paddingHorizontal: 20,
     },
-    dashedCircle: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        borderWidth: 1,
-        borderColor: '#333',
-        borderStyle: 'dashed',
+    heroCircle: {
+        width: 80,
+        height: 80,
+        borderRadius: 40,
+        backgroundColor: 'rgba(57, 187, 249, 0.1)',
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 24,
-    },
-    innerCircle: {
-        width: 70,
-        height: 70,
-        borderRadius: 35,
-        backgroundColor: '#1C1C1E',
-        justifyContent: 'center',
-        alignItems: 'center',
+        marginBottom: 20,
     },
     heroTitle: {
         fontSize: 26,
@@ -94,18 +79,18 @@ export const registerStyles = StyleSheet.create({
         fontSize: 15,
         color: Palette.textGray,
         textAlign: 'center',
-        paddingHorizontal: 20,
         lineHeight: 22,
     },
 
     // --- List Cards ---
     cardsList: {
         width: '100%',
+        marginBottom: 20,
     },
     listCard: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#1C1C1E',
+        backgroundColor: '#1E1E1E',
         borderRadius: 16,
         padding: 16,
         marginBottom: 12,
@@ -116,54 +101,60 @@ export const registerStyles = StyleSheet.create({
         borderColor: Palette.primary,
         backgroundColor: '#15202B',
     },
-    cardIconContainer: {
-        width: 40,
-        height: 40,
+    iconBox: {
+        width: 48,
+        height: 48,
         borderRadius: 12,
         backgroundColor: '#2C2C2E',
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 16,
     },
-    cardTextContainer: {
+    iconBoxSelected: {
+        backgroundColor: Palette.primary,
+    },
+    cardContent: {
         flex: 1,
     },
-    listCardTitle: {
+    cardTitle: {
         color: Palette.text,
         fontSize: 16,
         fontWeight: '600',
         marginBottom: 4,
     },
-    listCardDesc: {
-        color: '#888',
+    cardDesc: {
+        color: Palette.textGray,
         fontSize: 13,
-        lineHeight: 18,
     },
-    radioContainer: {
-        marginLeft: 10,
-    },
-    radioEmpty: {
+    radioButton: {
         width: 24,
         height: 24,
         borderRadius: 12,
         borderWidth: 2,
-        borderColor: '#444',
+        borderColor: Palette.textGray,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    radioInner: {
+        width: 12,
+        height: 12,
+        borderRadius: 6,
+        backgroundColor: Palette.primary,
     },
 
     // --- Step 2 Header & Form ---
     headerStep2: {
-        marginBottom: 10,
+        marginBottom: 30,
     },
     title: {
         fontSize: 28,
         fontWeight: 'bold',
         color: Palette.text,
-        marginBottom: 8,
     },
     subtitle: {
-        fontSize: 16,
+        fontSize: 14,
         color: Palette.textGray,
-        marginBottom: 32,
+        marginTop: 5,
     },
     form: {
         width: '100%',
@@ -171,42 +162,26 @@ export const registerStyles = StyleSheet.create({
 
     // --- Footer & Security ---
     footerContainer: {
-        marginBottom: 20,
+        marginTop: 'auto',
     },
     securityNote: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#111',
-        padding: 16,
-        borderRadius: 12,
-        marginBottom: 20,
+        justifyContent: 'center',
+        marginBottom: 15,
+        backgroundColor: '#1E1E1E',
+        padding: 10,
+        borderRadius: 8,
     },
     securityText: {
-        color: '#666',
+        color: Palette.textGray,
         fontSize: 12,
-        flex: 1,
-        lineHeight: 16,
-    },
-    continueButton: {
-        backgroundColor: '#FFF',
-        height: 56,
-        borderRadius: 28,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    continueButtonDisabled: {
-        backgroundColor: '#333',
-        opacity: 0.5,
-    },
-    continueButtonText: {
-        color: '#000',
-        fontSize: 18,
-        fontWeight: 'bold',
+        marginLeft: 8,
     },
     footer: {
         flexDirection: 'row',
         justifyContent: 'center',
-        marginTop: 20,
+        marginTop: 40,
         marginBottom: 20,
     },
     footerText: {
