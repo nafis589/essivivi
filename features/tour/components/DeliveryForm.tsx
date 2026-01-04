@@ -23,6 +23,7 @@ interface DeliveryFormProps {
 }
 
 export const DeliveryForm: React.FC<DeliveryFormProps> = ({ visible, onClose, onSubmit }) => {
+
     // --- Wizard State ---
     const [step, setStep] = useState(1);
 
@@ -52,6 +53,10 @@ export const DeliveryForm: React.FC<DeliveryFormProps> = ({ visible, onClose, on
             setClientName('');
             setClientPhone('');
             setGpsLocked(false);
+            setQtyVitale(0);
+            setQtyVoltic(0);
+            setQtyOther(0);
+            setAmount('');
         }
     }, [visible]);
 
@@ -76,9 +81,11 @@ export const DeliveryForm: React.FC<DeliveryFormProps> = ({ visible, onClose, on
                     return;
                 }
             }
-            // Move to Step 2
             setStep(2);
-            // Trigger GPS simulation
+        } else if (step === 2) {
+            // Validate Qty (Optional)
+            setStep(3);
+            // Trigger GPS simulation on step 3
             setTimeout(() => setGpsLocked(true), 1500);
         } else {
             // Submit
@@ -103,20 +110,82 @@ export const DeliveryForm: React.FC<DeliveryFormProps> = ({ visible, onClose, on
         }, 1000);
     };
 
-    const QtyControl = ({ label, value, onChange }: { label: string, value: number, onChange: (v: number) => void }) => (
-        <View style={styles.qtyRow}>
-            <Text style={styles.qtyLabel}>{label}</Text>
-            <View style={styles.qtyControl}>
-                <TouchableOpacity style={styles.circleBtn} onPress={() => onChange(Math.max(0, value - 1))}>
-                    <Ionicons name="remove" size={20} color="#333" />
-                </TouchableOpacity>
-                <Text style={styles.qtyValue}>{value}</Text>
-                <TouchableOpacity style={styles.circleBtn} onPress={() => onChange(value + 1)}>
-                    <Ionicons name="add" size={20} color="#333" />
-                </TouchableOpacity>
+    const ProductRow = ({
+        title,
+        subtitle,
+        price,
+        quantity,
+        onChange,
+        imageSource
+    }: any) => {
+
+        // Gérer l'incrément
+        const handleIncrement = () => onChange(quantity + 1);
+
+        // Gérer le décrément (minimum 0)
+        const handleDecrement = () => {
+            if (quantity > 0) onChange(quantity - 1);
+        };
+
+        // Gérer la saisie manuelle (convertir texte en nombre)
+        const handleManualChange = (text: string) => {
+            // On ne garde que les chiffres
+            const numericValue = text.replace(/[^0-9]/g, '');
+            onChange(numericValue === '' ? 0 : parseInt(numericValue, 10));
+        };
+
+        return (
+            <View style={styles.productRowContainer}>
+                {/* 1. Image du produit */}
+                <Image
+                    source={imageSource}
+                    style={styles.productImage}
+                    resizeMode="cover"
+                />
+
+                {/* 2. Infos Texte (Titre + Prix/Poids) */}
+                <View style={styles.productInfoContainer}>
+                    <Text style={styles.productTitle} numberOfLines={2}>
+                        {title}
+                    </Text>
+                    <Text style={styles.productSubtitle}>
+                        {price} • {subtitle}
+                    </Text>
+                </View>
+
+                {/* 3. Contrôleur de quantité (+ Input Manuel) */}
+                <View style={styles.counterContainer}>
+                    {/* Bouton Moins */}
+                    <TouchableOpacity
+                        style={styles.counterBtn}
+                        onPress={handleDecrement}
+                        activeOpacity={0.7}
+                    >
+                        <Ionicons name="remove" size={18} color="#333" />
+                    </TouchableOpacity>
+
+                    {/* Input Manuel */}
+                    <TextInput
+                        style={styles.counterInput}
+                        value={quantity.toString()}
+                        onChangeText={handleManualChange}
+                        keyboardType="number-pad"
+                        selectTextOnFocus={true} // Sélectionne tout le texte au clic
+                        maxLength={3}
+                    />
+
+                    {/* Bouton Plus */}
+                    <TouchableOpacity
+                        style={styles.counterBtn}
+                        onPress={handleIncrement}
+                        activeOpacity={0.7}
+                    >
+                        <Ionicons name="add" size={18} color="#333" />
+                    </TouchableOpacity>
+                </View>
             </View>
-        </View>
-    );
+        );
+    };
 
     return (
         <Modal visible={visible} animationType="slide" transparent>
@@ -129,9 +198,9 @@ export const DeliveryForm: React.FC<DeliveryFormProps> = ({ visible, onClose, on
                             <Text style={{ fontSize: 16, color: '#666' }}>Annuler</Text>
                         </TouchableOpacity>
                         <Text style={styles.wizardTitle}>
-                            {step === 1 ? 'Sélection Client' : 'Détails Livraison'}
+                            {step === 1 ? 'Client' : step === 2 ? 'Produits' : 'Paiement'}
                         </Text>
-                        <Text style={styles.stepIndicator}>Étape {step}/2</Text>
+                        <Text style={styles.stepIndicator}>Étape {step}/3</Text>
                     </View>
 
                     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
@@ -141,63 +210,75 @@ export const DeliveryForm: React.FC<DeliveryFormProps> = ({ visible, onClose, on
                             {step === 1 && (
                                 <View>
                                     {!isCreatingClient ? (
-                                        <View style={styles.clientGrid}>
-                                            {MOCK_CLIENTS.map((client) => {
-                                                const isSelected = selectedClientId === client.id;
+                                        <View>
+                                            <View style={styles.stepHeaderContainer}>
+                                                <Text style={styles.stepTitle}>Qui livrez-vous ?</Text>
+                                                <TouchableOpacity
+                                                    style={styles.fabInline}
+                                                    onPress={() => { setIsCreatingClient(true); setSelectedClientId(null); setClientName(''); }}
+                                                >
+                                                    <Ionicons name="add" size={24} color="#FFF" />
+                                                </TouchableOpacity>
+                                            </View>
 
-                                                return (
-                                                    <TouchableOpacity
-                                                        key={client.id}
-                                                        style={[
-                                                            styles.clientCardModern,
-                                                            isSelected ? styles.clientCardSelected : styles.clientCard
-                                                        ]}
-                                                        onPress={() => handleSelectClient(client)}
-                                                        activeOpacity={0.9}
-                                                    >
-                                                        {/* Header: Avatar + Name */}
-                                                        <View style={styles.cardHeader}>
-                                                            <Image
-                                                                source={{ uri: client.avatar }}
-                                                                style={styles.avatar}
-                                                            />
-                                                            <View style={styles.headerTextContainer}>
-                                                                <Text style={styles.clientName}>
-                                                                    {client.name}
-                                                                </Text>
-                                                            </View>
-                                                        </View>
+                                            <View style={styles.clientGrid}>
+                                                {MOCK_CLIENTS.map((client) => {
+                                                    const isSelected = selectedClientId === client.id;
 
-                                                        {/* Body: Company */}
-                                                        <Text style={styles.cardSubtitle} numberOfLines={2}>
-                                                            {client.company}
-                                                        </Text>
-
-                                                        {/* Footer: Amount Pill + Arrow Button */}
-                                                        <View style={styles.cardFooter}>
-                                                            <View style={[
-                                                                styles.amountPill,
-                                                                isSelected ? styles.amountPillSelected : styles.amountPillUnselected
-                                                            ]}>
-                                                                <Text style={styles.amountText}>{client.amount}</Text>
-                                                                <Text style={styles.pipelineText}>Total in Pipeline</Text>
-                                                            </View>
-
-                                                            <View style={[
-                                                                styles.iconCircle,
-                                                                isSelected ? styles.iconCircleSelected : styles.iconCircleUnselected
-                                                            ]}>
-                                                                <Ionicons
-                                                                    name="arrow-up"
-                                                                    size={18}
-                                                                    color={isSelected ? '#FFF' : '#1A1A1A'}
-                                                                    style={{ transform: [{ rotate: '45deg' }] }}
+                                                    return (
+                                                        <TouchableOpacity
+                                                            key={client.id}
+                                                            style={[
+                                                                styles.clientCardModern,
+                                                                isSelected ? styles.clientCardSelected : styles.clientCard
+                                                            ]}
+                                                            onPress={() => handleSelectClient(client)}
+                                                            activeOpacity={0.9}
+                                                        >
+                                                            {/* Header: Avatar + Name */}
+                                                            <View style={styles.cardHeader}>
+                                                                <Image
+                                                                    source={{ uri: client.avatar }}
+                                                                    style={styles.avatar}
                                                                 />
+                                                                <View style={styles.headerTextContainer}>
+                                                                    <Text style={styles.clientName}>
+                                                                        {client.name}
+                                                                    </Text>
+                                                                </View>
                                                             </View>
-                                                        </View>
-                                                    </TouchableOpacity>
-                                                );
-                                            })}
+
+                                                            {/* Body: Company */}
+                                                            <Text style={styles.cardSubtitle} numberOfLines={2}>
+                                                                {client.company}
+                                                            </Text>
+
+                                                            {/* Footer: Amount Pill + Arrow Button */}
+                                                            <View style={styles.cardFooter}>
+                                                                <View style={[
+                                                                    styles.amountPill,
+                                                                    isSelected ? styles.amountPillSelected : styles.amountPillUnselected
+                                                                ]}>
+                                                                    <Text style={styles.amountText}>{client.amount}</Text>
+                                                                    <Text style={styles.pipelineText}>Total in Pipeline</Text>
+                                                                </View>
+
+                                                                <View style={[
+                                                                    styles.iconCircle,
+                                                                    isSelected ? styles.iconCircleSelected : styles.iconCircleUnselected
+                                                                ]}>
+                                                                    <Ionicons
+                                                                        name="arrow-up"
+                                                                        size={18}
+                                                                        color={isSelected ? '#FFF' : '#1A1A1A'}
+                                                                        style={{ transform: [{ rotate: '45deg' }] }}
+                                                                    />
+                                                                </View>
+                                                            </View>
+                                                        </TouchableOpacity>
+                                                    );
+                                                })}
+                                            </View>
                                         </View>
                                     ) : (
                                         <View style={styles.sectionContainer}>
@@ -231,7 +312,7 @@ export const DeliveryForm: React.FC<DeliveryFormProps> = ({ visible, onClose, on
                                 </View>
                             )}
 
-                            {/* STEP 2: DETAILS */}
+                            {/* STEP 2: DETAILS (Products) */}
                             {step === 2 && (
                                 <View>
                                     <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
@@ -240,30 +321,54 @@ export const DeliveryForm: React.FC<DeliveryFormProps> = ({ visible, onClose, on
                                         </TouchableOpacity>
                                         <View style={{ marginLeft: 10 }}>
                                             <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{clientName}</Text>
-                                            <Text style={{ color: '#666', fontSize: 13 }}>{clientPhone}</Text>
+                                            <Text style={{ color: '#666', fontSize: 13 }}>{clientPhone || 'Client Existant'}</Text>
                                         </View>
                                     </View>
 
-                                    {/* GPS Section */}
-                                    <View style={styles.gpsContainer}>
-                                        {gpsLocked ? (
-                                            <Ionicons name="checkmark-circle" size={20} color="#2E7D32" />
-                                        ) : (
-                                            <Ionicons name="sync" size={20} color="#666" />
-                                        )}
-                                        <Text style={[styles.gpsText, !gpsLocked && { color: '#666' }]}>
-                                            {gpsLocked ? 'Position GPS Validée' : 'Acquisition GPS...'}
-                                        </Text>
-                                    </View>
-
-                                    <View style={{ height: 20 }} />
-
-                                    {/* Qty Section */}
                                     <View style={styles.sectionContainer}>
-                                        <Text style={{ marginBottom: 15, fontWeight: 'bold', fontSize: 16 }}>Quantités Livrées</Text>
-                                        <QtyControl label="Vitale (Pack)" value={qtyVitale} onChange={setQtyVitale} />
-                                        <QtyControl label="Voltic (Pack)" value={qtyVoltic} onChange={setQtyVoltic} />
-                                        <QtyControl label="Autres" value={qtyOther} onChange={setQtyOther} />
+                                        <Text style={styles.sectionTitle}>Quantités Livrées</Text>
+
+                                        <ProductRow
+                                            title="Vitale (Pack)"
+                                            price="290 F"
+                                            subtitle="Pack de 6"
+                                            quantity={qtyVitale}
+                                            onChange={setQtyVitale}
+                                            imageSource={{ uri: 'https://ui-avatars.com/api/?name=VI&background=0D8ABC&color=fff&size=128' }}
+                                        />
+
+                                        <ProductRow
+                                            title="Voltic (Pack)"
+                                            price="490 F"
+                                            subtitle="500ml x 12"
+                                            quantity={qtyVoltic}
+                                            onChange={setQtyVoltic}
+                                            imageSource={{ uri: 'https://ui-avatars.com/api/?name=VO&background=27AE60&color=fff&size=128' }}
+                                        />
+
+                                        <ProductRow
+                                            title="Autres Produits"
+                                            price="-- F"
+                                            subtitle="Divers"
+                                            quantity={qtyOther}
+                                            onChange={setQtyOther}
+                                            imageSource={{ uri: 'https://ui-avatars.com/api/?name=Au&background=95A5A6&color=fff&size=128' }}
+                                        />
+                                    </View>
+                                </View>
+                            )}
+
+                            {/* STEP 3: PAYMENT & PROOF */}
+                            {step === 3 && (
+                                <View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
+                                        <TouchableOpacity onPress={() => setStep(2)} style={{ padding: 5 }}>
+                                            <Ionicons name="arrow-back-circle" size={30} color="#333" />
+                                        </TouchableOpacity>
+                                        <View style={{ marginLeft: 10 }}>
+                                            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Récapitulatif</Text>
+                                            <Text style={{ color: '#666', fontSize: 13 }}>Total Articles: {qtyVitale + qtyVoltic + qtyOther}</Text>
+                                        </View>
                                     </View>
 
                                     {/* Payment Section */}
@@ -280,10 +385,29 @@ export const DeliveryForm: React.FC<DeliveryFormProps> = ({ visible, onClose, on
                                     </View>
 
                                     {/* Proof Section */}
-                                    <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF', padding: 15, borderRadius: 10, borderWidth: 1, borderStyle: 'dashed', borderColor: '#AAA', justifyContent: 'center', marginBottom: 20 }}>
-                                        <Ionicons name="camera-outline" size={24} color="#666" />
-                                        <Text style={{ marginLeft: 10, color: '#666' }}>Photo de preuve (Optionnel)</Text>
-                                    </TouchableOpacity>
+                                    <View style={styles.sectionContainer}>
+                                        <Text style={{ marginBottom: 10, fontWeight: 'bold', fontSize: 16 }}>Preuves de livraison</Text>
+                                        <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF', padding: 15, borderRadius: 10, borderWidth: 1, borderStyle: 'dashed', borderColor: '#AAA', justifyContent: 'center', marginBottom: 10 }}>
+                                            <Ionicons name="camera-outline" size={24} color="#666" />
+                                            <Text style={{ marginLeft: 10, color: '#666' }}>Photo de preuve (Optionnel)</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF', padding: 15, borderRadius: 10, borderWidth: 1, borderStyle: 'dashed', borderColor: '#AAA', justifyContent: 'center' }}>
+                                            <Ionicons name="pencil-outline" size={24} color="#666" />
+                                            <Text style={{ marginLeft: 10, color: '#666' }}>Signature Client</Text>
+                                        </TouchableOpacity>
+                                    </View>
+
+                                    {/* GPS Section */}
+                                    <View style={styles.gpsContainer}>
+                                        {gpsLocked ? (
+                                            <Ionicons name="checkmark-circle" size={20} color="#2E7D32" />
+                                        ) : (
+                                            <Ionicons name="sync" size={20} color="#666" />
+                                        )}
+                                        <Text style={[styles.gpsText, !gpsLocked && { color: '#666' }]}>
+                                            {gpsLocked ? 'Position GPS Validée' : 'Acquisition GPS...'}
+                                        </Text>
+                                    </View>
                                 </View>
                             )}
 
@@ -301,19 +425,12 @@ export const DeliveryForm: React.FC<DeliveryFormProps> = ({ visible, onClose, on
                             disabled={step === 1 && !selectedClientId && !isCreatingClient}
                         >
                             <Text style={styles.nextButtonText}>
-                                {step === 1 ? 'Suivant' : (isSubmitting ? 'Enregistrement...' : 'Valider la livraison')}
+                                {step === 3 ? (isSubmitting ? 'Enregistrement...' : 'Valider la livraison') : 'Suivant'}
                             </Text>
                         </TouchableOpacity>
                     </View>
 
-                    {/* FAB Add Client (Only Step 1 & List Mode) */}
-                    {step === 1 && !isCreatingClient && (
-                        <View style={styles.fabContainer}>
-                            <TouchableOpacity style={styles.fabAdd} onPress={() => { setIsCreatingClient(true); setSelectedClientId(null); setClientName(''); }}>
-                                <Ionicons name="add" size={30} color="#FFF" />
-                            </TouchableOpacity>
-                        </View>
-                    )}
+
 
                 </View>
             </View>

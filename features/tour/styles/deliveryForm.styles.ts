@@ -50,14 +50,33 @@ export const deliveryFormStyles = StyleSheet.create({
     // --- Content Area ---
     scrollContent: {
         padding: 10, // Adjusted padding for grid
-        paddingBottom: 100, // Space for bottom button
+        paddingBottom: 120, // Space for bottom button // UPDATED for better scrolling
     },
     stepTitle: {
         fontSize: 24,
         fontWeight: '800',
         color: '#111',
+        // marginBottom removed, handled by container
+    },
+    stepHeaderContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
         marginBottom: 20,
         paddingHorizontal: 10,
+    },
+    fabInline: {
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        backgroundColor: Palette.primary,
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: Palette.primary,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 5,
     },
 
     // --- Client Cards (Modern Grid) ---
@@ -66,21 +85,22 @@ export const deliveryFormStyles = StyleSheet.create({
         flexWrap: 'wrap',
         justifyContent: 'space-between',
         paddingHorizontal: 5,
+        marginTop: 0,
     },
     clientCardModern: {
-        width: '48%', // Pour avoir 2 colonnes avec un espace
-        borderRadius: 32, // Arrondi très prononcé comme sur l'image
+        width: '48%',
+        borderRadius: 32,
         padding: 16,
         marginBottom: 16,
         justifyContent: 'space-between',
-        minHeight: 180, // Hauteur minimale pour l'aspect ratio
-        backgroundColor: '#F4F5F7', // Palette.cardUnselected
+        minHeight: 180,
+        backgroundColor: '#F4F5F7',
     },
     clientCard: {
         backgroundColor: '#F4F5F7',
     },
     clientCardSelected: {
-        backgroundColor: '#FFE55C', // Palette.cardSelected
+        backgroundColor: '#FFE55C',
     },
 
     // Header (Avatar + Nom)
@@ -102,14 +122,14 @@ export const deliveryFormStyles = StyleSheet.create({
     clientName: {
         fontSize: 17,
         fontWeight: '600',
-        color: '#1A1A1A', // Palette.textPrimary
+        color: '#1A1A1A',
         lineHeight: 22,
     },
 
     // Company Text
-    cardSubtitle: { // Renamed from companyName to match usage
+    cardSubtitle: {
         fontSize: 13,
-        color: '#888888', // Palette.textSecondary
+        color: '#888888',
         marginBottom: 20,
         fontWeight: '400',
     },
@@ -119,7 +139,7 @@ export const deliveryFormStyles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'flex-end',
         justifyContent: 'space-between',
-        marginTop: 'auto', // Pousse le footer vers le bas
+        marginTop: 'auto',
     },
 
     // La "Pilule" contenant le prix
@@ -130,21 +150,21 @@ export const deliveryFormStyles = StyleSheet.create({
         justifyContent: 'center',
     },
     amountPillUnselected: {
-        backgroundColor: '#FFFFFF', // Souvent blanc sur fond gris clair
+        backgroundColor: '#FFFFFF',
     },
     amountPillSelected: {
         backgroundColor: 'transparent',
         borderWidth: 1,
-        borderColor: 'rgba(0,0,0,0.1)', // Légère bordure sur le fond jaune
+        borderColor: 'rgba(0,0,0,0.1)',
     },
     amountText: {
         fontSize: 15,
         fontWeight: '700',
-        color: '#1A1A1A', // Palette.textPrimary
+        color: '#1A1A1A',
     },
     pipelineText: {
         fontSize: 9,
-        color: '#888888', // Palette.textSecondary
+        color: '#888888',
         marginTop: 2,
     },
 
@@ -160,14 +180,15 @@ export const deliveryFormStyles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
     },
     iconCircleSelected: {
-        backgroundColor: '#101010', // Noir profond sur fond jaune
+        backgroundColor: '#101010',
     },
 
     // --- Floating Action Button ---
     fabContainer: {
         position: 'absolute',
-        top: 20,
+        top: 50, // UPDATED: Move it down slightly or keep relative to View
         right: 20,
+        zIndex: 999, // Ensure it's on top
     },
     fabAdd: {
         width: 50,
@@ -181,6 +202,62 @@ export const deliveryFormStyles = StyleSheet.create({
         shadowOpacity: 0.3,
         shadowRadius: 8,
         elevation: 5,
+    },
+
+    // --- Product Row (New) ---
+    productRowContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 20,
+        paddingBottom: 20,
+        borderBottomWidth: 1,
+        borderBottomColor: '#F0F0F0',
+    },
+    productImage: {
+        width: 64,
+        height: 64,
+        borderRadius: 16,
+        backgroundColor: '#F5F5F5',
+        marginRight: 15,
+    },
+    productInfoContainer: {
+        flex: 1,
+        justifyContent: 'center',
+    },
+    productTitle: {
+        fontSize: 15,
+        fontWeight: '600',
+        color: '#1A1A1A',
+        marginBottom: 6,
+        lineHeight: 20,
+    },
+    productSubtitle: {
+        fontSize: 13,
+        color: '#888',
+        fontWeight: '500',
+    },
+
+    // Counter
+    counterContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    counterBtn: {
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        backgroundColor: '#F7F7F9',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    counterInput: {
+        minWidth: 34,
+        textAlign: 'center',
+        fontSize: 16,
+        fontWeight: '700',
+        color: '#1A1A1A',
+        padding: 0,
+        marginHorizontal: 5,
     },
 
     // --- Footer Wizard Actions ---
@@ -209,58 +286,10 @@ export const deliveryFormStyles = StyleSheet.create({
         fontWeight: 'bold',
     },
 
-    // --- Old Inputs (kept for compatibility or reuse) ---
+    // --- Old Inputs reused ---
     sectionContainer: { marginBottom: 25, backgroundColor: '#FFF', padding: 15, borderRadius: 15 },
+    sectionTitle: { fontSize: 18, fontWeight: 'bold', color: '#1A1A1A', marginBottom: 20 },
     textInput: { backgroundColor: '#F9F9F9', padding: 15, borderRadius: 12, fontSize: 16, marginBottom: 10 },
-    qtyRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 15, backgroundColor: '#FFF', padding: 10, borderRadius: 10, borderWidth: 1, borderColor: '#F0F0F0' },
-    qtyLabel: { fontSize: 16, color: '#333', fontWeight: '500', flex: 1 },
-    qtyControl: { flexDirection: 'row', alignItems: 'center', gap: 15 },
-    circleBtn: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#F0F0F0', alignItems: 'center', justifyContent: 'center' },
-    qtyValue: { fontSize: 18, fontWeight: 'bold', color: '#333', width: 30, textAlign: 'center' },
     gpsContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#E8F5E9', padding: 10, borderRadius: 10, marginTop: 10 },
     gpsText: { color: '#2E7D32', fontWeight: '600', marginLeft: 8, fontSize: 13 },
-    // Unused but kept for reference or preventing breaks if referenced
-    clientCardSelectedLegacy: {
-        borderColor: Palette.primary,
-        backgroundColor: '#F0F9FF',
-    },
-    selectedBadge: {
-        position: 'absolute',
-        top: 10,
-        right: 10,
-        backgroundColor: Palette.primary,
-        width: 20,
-        height: 20,
-        borderRadius: 10,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    avatarContainer: {
-        width: 60,
-        height: 60,
-        borderRadius: 30,
-        backgroundColor: '#F0F0F0',
-        marginBottom: 10,
-        justifyContent: 'center',
-        alignItems: 'center',
-        overflow: 'hidden',
-    },
-    avatarImage: {
-        width: '100%',
-        height: '100%',
-        resizeMode: 'cover',
-    },
-    cardStat: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#F5F5F5',
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        borderRadius: 12,
-    },
-    cardStatText: {
-        fontSize: 12,
-        fontWeight: 'bold',
-        color: '#555',
-    },
 });
