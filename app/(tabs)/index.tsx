@@ -1,19 +1,47 @@
 import { useDashboard } from '@/features/dashboard/hooks/useDashboard';
 import { COLORS, dashboardStyles as styles } from '@/features/dashboard/styles/dashboard.styles';
+import { DeliveryForm } from '@/features/tour/components/DeliveryForm';
+import { TourSummary } from '@/features/tour/components/TourSummary';
 import { FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Image,
+  LayoutAnimation,
+  Platform,
   SafeAreaView,
   ScrollView,
   StatusBar,
   Text,
   TouchableOpacity,
+  UIManager,
   View
 } from 'react-native';
 
+if (Platform.OS === 'android') {
+  if (UIManager.setLayoutAnimationEnabledExperimental) {
+    UIManager.setLayoutAnimationEnabledExperimental(true);
+  }
+}
+
 export default function HomeScreen() {
-  const { isTourActive, toggleTour } = useDashboard();
+  const {
+    isTourActive,
+    showDeliveryForm,
+    showSummary,
+    stats,
+    startTour,
+    openDeliveryForm,
+    closeDeliveryForm,
+    handleAddDelivery,
+    requestEndTour,
+    cancelEndTour,
+    confirmEndTour
+  } = useDashboard();
+
+  // Trigger animation on state change
+  useEffect(() => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+  }, [isTourActive]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -28,7 +56,6 @@ export default function HomeScreen() {
           />
         </TouchableOpacity>
 
-        {/* Logo au centre (Texte stylisé pour l'exemple) */}
         <View style={styles.logoContainer}>
           <MaterialCommunityIcons name="water" size={24} color={COLORS.primary} />
           <Text style={styles.logoText}>essivivi</Text>
@@ -44,9 +71,8 @@ export default function HomeScreen() {
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
 
-        {/* --- MAIN ACTION CARD (Le "Vert" de l'image) --- */}
+        {/* --- MAIN ACTION CARD --- */}
         <View style={styles.mainCard}>
-          {/* Motif de fond décoratif (lignes courbes simulées) */}
           <View style={styles.bgPatternCircle} />
 
           <View style={styles.mainCardContent}>
@@ -56,25 +82,34 @@ export default function HomeScreen() {
               </Text>
               <Text style={styles.mainCardSubtitle}>
                 {isTourActive
-                  ? 'Zone: Centre-ville • Secteur B'
+                  ? 'Secteur: Centre-ville\nGPS Actif • Suivi en temps réel'
                   : 'Vous n\'avez pas encore démarré votre tournée.'}
               </Text>
 
-              <TouchableOpacity
-                style={[styles.actionBtn, isTourActive ? styles.actionBtnStop : null]}
-                onPress={toggleTour}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.actionBtnText}>
-                  {isTourActive ? 'Terminer' : 'Démarrer la tournée'}
-                </Text>
-              </TouchableOpacity>
+              {/* Only show 'Stop' button here if tour is active. 
+                  Start is handled by the bottom FAB. */}
+              {isTourActive && (
+                <TouchableOpacity
+                  style={[styles.actionBtn, styles.actionBtnStop]}
+                  onPress={requestEndTour}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.actionBtnText}>Terminer la tournée</Text>
+                </TouchableOpacity>
+              )}
+              {!isTourActive && (
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 5 }}>
+                  <Ionicons name="arrow-down-circle-outline" size={20} color="#004D40" />
+                  <Text style={{ marginLeft: 5, color: '#004D40', fontSize: 12 }}>
+                    Appuyez sur le bouton Play en bas
+                  </Text>
+                </View>
+              )}
             </View>
 
-            {/* Illustration "Sticker" (Camion ou Livreur) */}
             <View style={styles.stickerContainer}>
               <Image
-                source={{ uri: 'https://img.freepik.com/free-psd/3d-rendering-delivery-concept_23-2149557026.jpg?w=740&t=st=1704000000~exp=1704000000~hmac=xyz' }} // Placeholder 3D style
+                source={{ uri: 'https://img.freepik.com/free-psd/3d-rendering-delivery-concept_23-2149557026.jpg?w=740' }}
                 style={styles.stickerImage}
               />
             </View>
@@ -91,9 +126,9 @@ export default function HomeScreen() {
                 <MaterialCommunityIcons name="cash-multiple" size={25} color="#FFF" />
               </View>
               <Text style={[styles.statValue, !isTourActive && styles.statValueInactive]}>
-                {isTourActive ? '36 000' : '—'}
+                {isTourActive ? stats.amount.toLocaleString() : '—'}
               </Text>
-              <Text style={styles.statLabel}>Montant</Text>
+              <Text style={styles.statLabel}>FCFA</Text>
             </View>
 
             {/* 2. Livraisons */}
@@ -102,18 +137,18 @@ export default function HomeScreen() {
                 <MaterialCommunityIcons name="package-variant-closed" size={25} color="#FFF" />
               </View>
               <Text style={[styles.statValue, !isTourActive && styles.statValueInactive]}>
-                {isTourActive ? '8' : '0'}
+                {isTourActive ? stats.deliveries : '0'}
               </Text>
               <Text style={styles.statLabel}>Livraisons</Text>
             </View>
 
-            {/* 3. Activité */}
+            {/* 3. Activité (Durée) */}
             <View style={styles.statItem}>
               <View style={styles.statIconContainer}>
                 <Ionicons name="time-outline" size={25} color="#FFF" />
               </View>
               <Text style={[styles.statValue, !isTourActive && styles.statValueInactive]}>
-                {isTourActive ? '1h 15' : '—'}
+                {isTourActive ? stats.duration : '—'}
               </Text>
               <Text style={styles.statLabel}>Activité</Text>
             </View>
@@ -128,7 +163,7 @@ export default function HomeScreen() {
                 />
               </View>
               <Text style={[styles.statValue, !isTourActive && styles.statValueInactive]}>
-                {isTourActive ? 'Actif' : 'Inactif'}
+                {isTourActive ? 'ON' : 'OFF'}
               </Text>
               <Text style={styles.statLabel}>GPS</Text>
             </View>
@@ -136,15 +171,17 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* --- LISTE RÉCENTE (Bas de page) --- */}
+        {/* --- LISTE RÉCENTE --- */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Prochaines livraisons</Text>
+          <Text style={styles.sectionTitle}>
+            {isTourActive ? 'Dernières livraisons' : 'Plans de tournée'}
+          </Text>
           <TouchableOpacity>
             <Text style={styles.seeAllText}>Voir tout</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Liste items */}
+        {/* Liste items mockés */}
         {[1, 2, 3].map((item, index) => (
           <View key={index} style={styles.listItem}>
             <View style={styles.listIconContainer}>
@@ -158,8 +195,10 @@ export default function HomeScreen() {
             </View>
 
             <View style={styles.listContent}>
-              <Text style={styles.clientName}>Restaurant Le Gourmet</Text>
-              <Text style={styles.listDate}>10 Caisses • 14:00 PM</Text>
+              <Text style={styles.clientName}>Client Standard #{index + 1}</Text>
+              <Text style={styles.listDate}>
+                {isTourActive ? 'Livré à 10:30' : 'Prévu aujourd\'hui'}
+              </Text>
             </View>
 
             <TouchableOpacity style={styles.listBtn}>
@@ -170,8 +209,7 @@ export default function HomeScreen() {
 
       </ScrollView>
 
-      {/* --- BOTTOM NAVIGATION (Custom Floating Pill Style) --- */}
-      {/* J'ai opté pour le style "Pill" noir flottant de l'image Mupet, adapté avec 5 icônes */}
+      {/* --- BOTTOM NAVIGATION (Transformed) --- */}
       <View style={styles.bottomNavWrapper}>
         <View style={styles.bottomNavContainer}>
 
@@ -180,26 +218,53 @@ export default function HomeScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.navItem}>
-            <MaterialCommunityIcons name="truck-delivery" size={24} color="#666" />
+            <MaterialCommunityIcons name="history" size={24} color="#666" />
           </TouchableOpacity>
 
-          {/* Bouton Central Action */}
-          <TouchableOpacity style={styles.navMainAction} onPress={toggleTour}>
-            <View style={[styles.navMainCircle, isTourActive && { backgroundColor: COLORS.danger }]}>
-              <FontAwesome5 name={isTourActive ? "stop" : "play"} size={18} color="#FFF" style={{ marginLeft: isTourActive ? 0 : 4 }} />
+          {/* --- MAIN FAB --- */}
+          {/* Action depends on isTourActive */}
+          <TouchableOpacity
+            style={styles.navMainAction}
+            onPress={isTourActive ? openDeliveryForm : startTour}
+            activeOpacity={0.9}
+          >
+            <View style={[
+              styles.navMainCircle,
+              isTourActive && { backgroundColor: COLORS.primary } // Keep primary but maybe pulse or change icon
+            ]}>
+              {/* Icon Transition */}
+              {isTourActive ? (
+                <Ionicons name="add" size={32} color="#FFF" />
+              ) : (
+                <FontAwesome5 name="play" size={22} color="#FFF" style={{ marginLeft: 4 }} />
+              )}
             </View>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.navItem}>
-            <Ionicons name="people" size={24} color="#666" />
+            <Ionicons name="stats-chart" size={24} color="#666" />
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.navItem}>
-            <Ionicons name="person" size={24} color="#666" />
+            <Ionicons name="settings-outline" size={24} color="#666" />
           </TouchableOpacity>
 
         </View>
       </View>
+
+      {/* --- MODALS --- */}
+      <DeliveryForm
+        visible={showDeliveryForm}
+        onClose={closeDeliveryForm}
+        onSubmit={handleAddDelivery}
+      />
+
+      <TourSummary
+        visible={showSummary}
+        onCancel={cancelEndTour}
+        onConfirm={confirmEndTour}
+        stats={stats}
+      />
 
     </SafeAreaView>
   );
