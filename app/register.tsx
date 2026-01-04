@@ -201,16 +201,18 @@ export default function RegisterScreen() {
             </Text>
 
             <ThemedInput
-                label="Nom complet"
+                label="Nom"
                 value={fullName}
                 onChangeText={setFullName}
                 error={formErrors.fullName}
+                placeholder="Entrez votre nom"
             />
             <ThemedInput
                 label="Email"
                 value={email}
                 onChangeText={setEmail}
                 error={formErrors.email}
+                placeholder="Entrez votre email"
             />
             <ThemedInput
                 label="Mot de passe"
@@ -218,6 +220,7 @@ export default function RegisterScreen() {
                 value={password}
                 onChangeText={setPassword}
                 error={formErrors.password}
+                placeholder="Entrez votre mot de passe"
             />
             <ThemedInput
                 label="Confirmer le mot de passe"
@@ -225,6 +228,7 @@ export default function RegisterScreen() {
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
                 error={formErrors.confirmPassword}
+                placeholder="Confirmer le mot de passe"
             />
 
             <PrimaryButton
