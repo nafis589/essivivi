@@ -1,10 +1,11 @@
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { ThemedInput } from '@/components/ui/ThemedInput';
 import { Palette } from '@/constants/theme';
-import { useRegister } from '@/features/auth/hooks/useRegister';
 import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
+import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
 import {
+    Alert,
     KeyboardAvoidingView,
     Platform,
     SafeAreaView,
@@ -12,40 +13,114 @@ import {
     StatusBar,
     Text,
     TouchableOpacity,
-    View
+    View,
 } from 'react-native';
+import { z } from 'zod';
+
+import { registerStyles as styles } from '@/features/auth/styles/register.styles';
+
+/* ------------------ Validation ------------------ */
+
+const registerSchema = z
+    .object({
+        fullName: z.string().min(2, 'Le nom doit comporter au moins 2 caractères'),
+        email: z.string().email('Adresse email invalide'),
+        password: z.string().min(6, 'Le mot de passe doit faire au moins 6 caractères'),
+        confirmPassword: z.string(),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+        message: 'Les mots de passe ne correspondent pas',
+        path: ['confirmPassword'],
+    });
+
+type RegisterFormErrors = {
+    fullName?: string;
+    email?: string;
+    password?: string;
+    confirmPassword?: string;
+};
 
 export default function RegisterScreen() {
-    const {
-        step,
-        selectedRole, setSelectedRole,
-        fullName, setFullName,
-        email, setEmail,
-        password, setPassword,
-        confirmPassword, setConfirmPassword,
-        isLoading,
-        formErrors,
-        handleNextStep,
-        handlePrevStep,
-        handleRegister,
-        goToLogin
-    } = useRegister();
+    const router = useRouter();
 
-    // --- Rendu Barre de progression ---
+    const [step, setStep] = useState(1);
+    const [isLoading, setIsLoading] = useState(false);
+    const [selectedRole, setSelectedRole] = useState<'client' | 'livreur' | null>(null);
+
+    const [fullName, setFullName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [formErrors, setFormErrors] = useState<RegisterFormErrors>({});
+
+    /* ------------------ Navigation ------------------ */
+
+    const handleNextStep = () => {
+        if (step === 1 && selectedRole) setStep(2);
+    };
+
+    const handlePrevStep = () => {
+        step === 2 ? setStep(1) : router.back();
+    };
+
+    const handleRegister = () => {
+        setFormErrors({});
+
+        const result = registerSchema.safeParse({
+            fullName,
+            email,
+            password,
+            confirmPassword,
+        });
+
+        if (!result.success) {
+            const errors: RegisterFormErrors = {};
+            result.error.issues.forEach((issue) => {
+                const key = issue.path[0] as keyof RegisterFormErrors;
+                errors[key] = issue.message;
+            });
+            setFormErrors(errors);
+            return;
+        }
+
+        setIsLoading(true);
+        setTimeout(() => {
+            setIsLoading(false);
+            Alert.alert(
+                'Compte créé !',
+                `Bienvenue ${fullName}. Votre compte ${selectedRole} est prêt.`,
+                [{ text: 'OK', onPress: () => router.replace('/login') }]
+            );
+        }, 2000);
+    };
+
+    /* ------------------ UI ------------------ */
+
     const renderProgressBar = () => (
         <View style={styles.progressContainer}>
-            <View style={[styles.progressStep, step >= 1 && styles.progressActive]} />
-            <View style={[styles.progressStep, step >= 2 && styles.progressActive]} />
+            <View style={styles.progressTrack}>
+                <View
+                    style={[
+                        styles.progressBar,
+                        { width: step === 1 ? '50%' : '100%' },
+                    ]}
+                />
+            </View>
+            <Text style={styles.stepText}>Étape {step} sur 2</Text>
         </View>
     );
 
-    // --- Rendu Étape 1 : Choix Rôle ---
     const renderStep1 = () => (
         <View style={styles.stepContainer}>
-            {/* Hero Section */}
-            <View style={styles.heroSection}>
-                <View style={styles.heroCircle}>
-                    <Ionicons name="people" size={40} color={Palette.primary} />
+            <View style={styles.heroContainer}>
+                <View style={styles.dashedCircle}>
+                    <View style={styles.innerCircle}>
+                        <Ionicons
+                            name={selectedRole === 'livreur' ? 'bicycle' : 'person'}
+                            size={40}
+                            color="#FFF"
+                        />
+                    </View>
                 </View>
                 <Text style={styles.heroTitle}>Créer un compte</Text>
                 <Text style={styles.heroSubtitle}>
@@ -53,122 +128,110 @@ export default function RegisterScreen() {
                 </Text>
             </View>
 
-            {/* Cartes de sélection */}
             <View style={styles.cardsList}>
-                {/* Carte Client */}
-                <TouchableOpacity
-                    style={[styles.listCard, selectedRole === 'client' && styles.listCardSelected]}
-                    onPress={() => setSelectedRole('client')}
-                    activeOpacity={0.8}
-                >
-                    <View style={[styles.iconBox, selectedRole === 'client' && styles.iconBoxSelected]}>
-                        <Ionicons
-                            name="person"
-                            size={24}
-                            color={selectedRole === 'client' ? '#FFF' : Palette.text}
-                        />
-                    </View>
-                    <View style={styles.cardContent}>
-                        <Text style={styles.cardTitle}>Je suis Client</Text>
-                        <Text style={styles.cardDesc}>Je commande de l'eau</Text>
-                    </View>
-                    <View style={styles.radioButton}>
-                        {selectedRole === 'client' && <View style={styles.radioInner} />}
-                    </View>
-                </TouchableOpacity>
-
-                {/* Carte Livreur */}
-                <TouchableOpacity
-                    style={[styles.listCard, selectedRole === 'livreur' && styles.listCardSelected]}
-                    onPress={() => setSelectedRole('livreur')}
-                    activeOpacity={0.8}
-                >
-                    <View style={[styles.iconBox, selectedRole === 'livreur' && styles.iconBoxSelected]}>
-                        <Ionicons
-                            name="bicycle"
-                            size={24}
-                            color={selectedRole === 'livreur' ? '#FFF' : Palette.text}
-                        />
-                    </View>
-                    <View style={styles.cardContent}>
-                        <Text style={styles.cardTitle}>Je suis Livreur</Text>
-                        <Text style={styles.cardDesc}>Je livre les commandes</Text>
-                    </View>
-                    <View style={styles.radioButton}>
-                        {selectedRole === 'livreur' && <View style={styles.radioInner} />}
-                    </View>
-                </TouchableOpacity>
+                {(['client', 'livreur'] as const).map((role) => (
+                    <TouchableOpacity
+                        key={role}
+                        style={[
+                            styles.listCard,
+                            selectedRole === role && styles.listCardSelected,
+                        ]}
+                        onPress={() => setSelectedRole(role)}
+                    >
+                        <View style={styles.cardIconContainer}>
+                            <Ionicons
+                                name={role === 'client' ? 'person' : 'bicycle'}
+                                size={24}
+                                color="#FFF"
+                            />
+                        </View>
+                        <View style={styles.cardTextContainer}>
+                            <Text style={styles.listCardTitle}>
+                                {role === 'client' ? 'Client' : 'Livreur'}
+                            </Text>
+                            <Text style={styles.listCardDesc}>
+                                {role === 'client'
+                                    ? "Commander de l'eau et suivre vos livraisons."
+                                    : 'Effectuer des livraisons et gérer vos tournées.'}
+                            </Text>
+                        </View>
+                        <View style={styles.radioContainer}>
+                            {selectedRole === role ? (
+                                <Ionicons
+                                    name="checkmark-circle"
+                                    size={24}
+                                    color={Palette.primary}
+                                />
+                            ) : (
+                                <View style={styles.radioEmpty} />
+                            )}
+                        </View>
+                    </TouchableOpacity>
+                ))}
             </View>
 
             <View style={styles.footerContainer}>
                 <View style={styles.securityNote}>
-                    <Ionicons name="shield-checkmark-outline" size={16} color={Palette.primary} />
-                    <Text style={styles.securityText}>Vos données sont sécurisées</Text>
+                    <Ionicons name="lock-closed" size={16} color="#666" />
+                    <Text style={styles.securityText}>
+                        Vos données personnelles sont chiffrées et sécurisées.
+                    </Text>
+                    <Ionicons name="chevron-forward" size={16} color="#666" />
                 </View>
 
-                {/* Bouton Continuer */}
-                <PrimaryButton
-                    title="Continuer"
-                    onPress={handleNextStep}
+                <TouchableOpacity
+                    style={[
+                        styles.continueButton,
+                        !selectedRole && styles.continueButtonDisabled,
+                    ]}
                     disabled={!selectedRole}
-                />
+                    onPress={handleNextStep}
+                >
+                    <Text style={styles.continueButtonText}>Continuer</Text>
+                </TouchableOpacity>
             </View>
         </View>
     );
 
-    // --- Rendu Étape 2 : Formulaire ---
     const renderStep2 = () => (
         <View style={styles.stepContainer}>
-            <View style={styles.headerStep2}>
-                <View>
-                    <Text style={styles.title}>Infos personnelles</Text>
-                    <Text style={styles.subtitle}>Complétez votre profil {selectedRole}</Text>
-                </View>
-            </View>
+            <Text style={styles.title}>Informations personnelles</Text>
+            <Text style={styles.subtitle}>
+                Complétez votre profil {selectedRole}
+            </Text>
 
-            <View style={styles.form}>
-                <ThemedInput
-                    label="Nom complet"
-                    placeholder="Entrer votre nom"
-                    value={fullName}
-                    onChangeText={setFullName}
-                    error={formErrors.fullName}
-                />
+            <ThemedInput
+                label="Nom complet"
+                value={fullName}
+                onChangeText={setFullName}
+                error={formErrors.fullName}
+            />
+            <ThemedInput
+                label="Email"
+                value={email}
+                onChangeText={setEmail}
+                error={formErrors.email}
+            />
+            <ThemedInput
+                label="Mot de passe"
+                isPassword
+                value={password}
+                onChangeText={setPassword}
+                error={formErrors.password}
+            />
+            <ThemedInput
+                label="Confirmer le mot de passe"
+                isPassword
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                error={formErrors.confirmPassword}
+            />
 
-                <ThemedInput
-                    label="Email"
-                    placeholder="Entrer votre email"
-                    keyboardType="email-address"
-                    value={email}
-                    onChangeText={setEmail}
-                    error={formErrors.email}
-                />
-
-                <ThemedInput
-                    label="Mot de passe"
-                    placeholder="Entrer votre mot de passe"
-                    isPassword
-                    value={password}
-                    onChangeText={setPassword}
-                    error={formErrors.password}
-                />
-
-                <ThemedInput
-                    label="Confirmer le mot de passe"
-                    placeholder="Confirmer votre mot de passe"
-                    isPassword
-                    value={confirmPassword}
-                    onChangeText={setConfirmPassword}
-                    error={formErrors.confirmPassword}
-                />
-
-                {/* Bouton Submit */}
-                <PrimaryButton
-                    title="Créer le compte"
-                    onPress={handleRegister}
-                    isLoading={isLoading}
-                />
-            </View>
+            <PrimaryButton
+                title="Créer le compte"
+                isLoading={isLoading}
+                onPress={handleRegister}
+            />
         </View>
     );
 
@@ -176,7 +239,6 @@ export default function RegisterScreen() {
         <SafeAreaView style={styles.container}>
             <StatusBar barStyle="light-content" backgroundColor={Palette.background} />
 
-            {/* Top Bar avec Bouton Retour */}
             <View style={styles.topBar}>
                 <TouchableOpacity onPress={handlePrevStep} style={styles.backButton}>
                     <Ionicons name="arrow-back" size={24} color={Palette.text} />
@@ -184,32 +246,23 @@ export default function RegisterScreen() {
                 <Text style={styles.brandName}>Inscription</Text>
             </View>
 
-            {/* Barre de progression */}
             {renderProgressBar()}
 
             <KeyboardAvoidingView
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 style={{ flex: 1 }}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             >
-                <ScrollView
-                    contentContainerStyle={styles.scrollContent}
-                    keyboardShouldPersistTaps="handled"
-                >
+                <ScrollView contentContainerStyle={styles.scrollContent}>
                     {step === 1 ? renderStep1() : renderStep2()}
 
-                    {/* Footer Lien connexion */}
                     <View style={styles.footer}>
                         <Text style={styles.footerText}>Déjà un compte ? </Text>
-                        <TouchableOpacity onPress={goToLogin}>
+                        <TouchableOpacity onPress={() => router.replace('/login')}>
                             <Text style={styles.linkText}>Se connecter</Text>
                         </TouchableOpacity>
                     </View>
-
                 </ScrollView>
             </KeyboardAvoidingView>
         </SafeAreaView>
     );
 }
-
-import { registerStyles as styles } from '@/features/auth/styles/register.styles';
-
