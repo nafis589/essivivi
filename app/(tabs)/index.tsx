@@ -107,10 +107,10 @@ export default function HomeScreen() {
               )}
             </View>
 
-            <View style={styles.stickerContainer}>
+            <View style={styles.illustrationContainer}>
               <Image
-                source={{ uri: 'https://img.freepik.com/free-psd/3d-rendering-delivery-concept_23-2149557026.jpg?w=740' }}
-                style={styles.stickerImage}
+                source={require('@/assets/images/DESIGN.png')}
+                style={styles.illustrationImage}
               />
             </View>
           </View>

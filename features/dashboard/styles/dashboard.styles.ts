@@ -131,21 +131,15 @@ export const dashboardStyles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 14,
     },
-    stickerContainer: {
-        width: 100,
-        height: 100,
+    illustrationContainer: {
         justifyContent: 'center',
         alignItems: 'center',
-        // Effet "Sticker" blanc autour de l'image
-        backgroundColor: '#FFF',
-        borderRadius: 20,
-        transform: [{ rotate: '5deg' }], // Petite rotation dynamique comme sur l'image
-        elevation: 5,
+        right: -10, // Slight overlap for depth
     },
-    stickerImage: {
-        width: 90,
-        height: 90,
-        borderRadius: 15,
+    illustrationImage: {
+        width: 150, // Reduced from 130 to fit better alongside text, user can adjust
+        height: 150,
+        resizeMode: 'contain',
     },
 
     // --- Dashboard Card (Dark) ---
@@ -221,12 +215,7 @@ export const dashboardStyles = StyleSheet.create({
     statValueInactive: {
         color: '#666', // Dimmed value
     },
-    illustrationImage: {
-        width: 100,
-        height: 100,
-        resizeMode: 'contain',
-        // Placeholder background to make it visible until you insert your SVG/Image
-    },
+
 
     // --- List Section ---
     sectionHeader: {
