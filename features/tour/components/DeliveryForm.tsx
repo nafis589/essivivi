@@ -13,6 +13,7 @@ import {
     TouchableOpacity,
     View
 } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 import { MOCK_CLIENTS } from '../data/mockClients';
 import { deliveryFormStyles as styles } from '../styles/deliveryForm.styles';
 
@@ -115,8 +116,7 @@ export const DeliveryForm: React.FC<DeliveryFormProps> = ({ visible, onClose, on
         subtitle,
         price,
         quantity,
-        onChange,
-        imageSource
+        onChange
     }: any) => {
 
         // Gérer l'incrément
@@ -137,11 +137,11 @@ export const DeliveryForm: React.FC<DeliveryFormProps> = ({ visible, onClose, on
         return (
             <View style={styles.productRowContainer}>
                 {/* 1. Image du produit */}
-                <Image
-                    source={imageSource}
-                    style={styles.productImage}
-                    resizeMode="cover"
-                />
+                <View style={[styles.productImage, { alignItems: 'center', justifyContent: 'center' }]}>
+                    <Svg width={40} height={40} viewBox="0 0 2048 2048">
+                        <Path fill="#000000" d="m1344 2l704 352v785l-128-64V497l-512 256v258l-128 64V753L768 497v227l-128-64V354L1344 2zm0 640l177-89l-463-265l-211 106l497 248zm315-157l182-91l-497-249l-149 75l464 265zm-507 654l-128 64v-1l-384 192v455l384-193v144l-448 224L0 1735v-676l576-288l576 288v80zm-640 710v-455l-384-192v454l384 193zm64-566l369-184l-369-185l-369 185l369 184zm576-1l448-224l448 224v527l-448 224l-448-224v-527zm384 576v-305l-256-128v305l256 128zm384-128v-305l-256 128v305l256 128zm-320-288l241-121l-241-120l-241 120l241 121z" />
+                    </Svg>
+                </View>
 
                 {/* 2. Infos Texte (Titre + Prix/Poids) */}
                 <View style={styles.productInfoContainer}>
@@ -334,7 +334,6 @@ export const DeliveryForm: React.FC<DeliveryFormProps> = ({ visible, onClose, on
                                             subtitle="Pack de 6"
                                             quantity={qtyVitale}
                                             onChange={setQtyVitale}
-                                            imageSource={{ uri: 'https://ui-avatars.com/api/?name=VI&background=0D8ABC&color=fff&size=128' }}
                                         />
 
                                         <ProductRow
@@ -343,7 +342,6 @@ export const DeliveryForm: React.FC<DeliveryFormProps> = ({ visible, onClose, on
                                             subtitle="500ml x 12"
                                             quantity={qtyVoltic}
                                             onChange={setQtyVoltic}
-                                            imageSource={{ uri: 'https://ui-avatars.com/api/?name=VO&background=27AE60&color=fff&size=128' }}
                                         />
 
                                         <ProductRow
@@ -352,7 +350,6 @@ export const DeliveryForm: React.FC<DeliveryFormProps> = ({ visible, onClose, on
                                             subtitle="Divers"
                                             quantity={qtyOther}
                                             onChange={setQtyOther}
-                                            imageSource={{ uri: 'https://ui-avatars.com/api/?name=Au&background=95A5A6&color=fff&size=128' }}
                                         />
                                     </View>
                                 </View>

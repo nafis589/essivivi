@@ -287,7 +287,7 @@ export const deliveryFormStyles = StyleSheet.create({
     },
 
     // --- Old Inputs reused ---
-    sectionContainer: { marginBottom: 25, backgroundColor: '#FFF', padding: 15, borderRadius: 15 },
+    sectionContainer: { marginBottom: 25, backgroundColor: '#F8F9FA', padding: 15, borderRadius: 15 },
     sectionTitle: { fontSize: 18, fontWeight: 'bold', color: '#1A1A1A', marginBottom: 20 },
     textInput: { backgroundColor: '#F9F9F9', padding: 15, borderRadius: 12, fontSize: 16, marginBottom: 10 },
     gpsContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#E8F5E9', padding: 10, borderRadius: 10, marginTop: 10 },
