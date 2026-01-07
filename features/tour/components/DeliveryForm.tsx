@@ -20,8 +20,18 @@ import { deliveryFormStyles as styles } from '../styles/deliveryForm.styles';
 interface DeliveryFormProps {
     visible: boolean;
     onClose: () => void;
+
     onSubmit: (data: any) => void;
 }
+
+// GPS Simulation Helper
+const simulateGps = () => {
+    return new Promise<string>((resolve) => {
+        setTimeout(() => {
+            resolve('5.3600, -4.0083'); // Example coordinates
+        }, 2000);
+    });
+};
 
 export const DeliveryForm: React.FC<DeliveryFormProps> = ({ visible, onClose, onSubmit }) => {
 
@@ -41,6 +51,16 @@ export const DeliveryForm: React.FC<DeliveryFormProps> = ({ visible, onClose, on
     const [qtyVoltic, setQtyVoltic] = useState(0);
     const [qtyOther, setQtyOther] = useState(0);
     const [amount, setAmount] = useState('');
+
+    // New Client Fields
+    const [managerName, setManagerName] = useState('');
+    const [address, setAddress] = useState('');
+    const [gpsCoords, setGpsCoords] = useState<string | null>(null);
+    const [isGpsLoading, setIsGpsLoading] = useState(false);
+
+    // Focus State
+    const [focusedField, setFocusedField] = useState<string | null>(null);
+
     const [gpsLocked, setGpsLocked] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -57,9 +77,26 @@ export const DeliveryForm: React.FC<DeliveryFormProps> = ({ visible, onClose, on
             setQtyVitale(0);
             setQtyVoltic(0);
             setQtyOther(0);
+
             setAmount('');
+            setManagerName('');
+            setAddress('');
+            setGpsCoords(null);
+            setIsGpsLoading(false);
         }
     }, [visible]);
+
+    // Simulate GPS when entering 'Create Client' mode
+    useEffect(() => {
+        if (isCreatingClient) {
+            setIsGpsLoading(true);
+            setGpsCoords(null);
+            simulateGps().then((coords) => {
+                setGpsCoords(coords);
+                setIsGpsLoading(false);
+            });
+        }
+    }, [isCreatingClient]);
 
     // Handle Client Selection
     const handleSelectClient = (client: typeof MOCK_CLIENTS[0]) => {
@@ -106,6 +143,12 @@ export const DeliveryForm: React.FC<DeliveryFormProps> = ({ visible, onClose, on
                 amount: parseFloat(amount) || 0,
                 timestamp: new Date().toISOString(),
                 gps: gpsLocked ? '5.345, -3.987' : null,
+                // New Client Data if creating
+                ...(isCreatingClient ? {
+                    managerName,
+                    address,
+                    gpsForClient: gpsCoords
+                } : {})
             };
             onSubmit(deliveryData);
         }, 1000);
@@ -283,30 +326,102 @@ export const DeliveryForm: React.FC<DeliveryFormProps> = ({ visible, onClose, on
                                     ) : (
                                         <View style={styles.sectionContainer}>
                                             <TouchableOpacity
-                                                style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}
+                                                style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 25 }}
                                                 onPress={() => setIsCreatingClient(false)}
                                             >
-                                                <Ionicons name="arrow-back" size={24} color={Palette.primary} />
-                                                <Text style={{ marginLeft: 8, fontSize: 16, fontWeight: '600', color: Palette.primary }}>Retour</Text>
+                                                <Ionicons name="arrow-back" size={24} color="#333" />
+                                                <Text style={{ marginLeft: 8, fontSize: 16, fontWeight: '600', color: '#333' }}>Retour</Text>
                                             </TouchableOpacity>
 
-                                            <TextInput
-                                                placeholder="Nom du Client"
-                                                style={styles.textInput}
-                                                value={clientName}
-                                                onChangeText={setClientName}
-                                            />
-                                            <TextInput
-                                                placeholder="Entreprise"
-                                                style={styles.textInput}
-                                            />
-                                            <TextInput
-                                                placeholder="Téléphone"
-                                                keyboardType="phone-pad"
-                                                style={styles.textInput}
-                                                value={clientPhone}
-                                                onChangeText={setClientPhone}
-                                            />
+                                            <Text style={styles.formTitle}>Nouveau Client</Text>
+                                            <Text style={styles.formSubtitle}>Remplissez les informations ci-dessous</Text>
+
+                                            {/* Nom du point de vente */}
+                                            <View style={[
+                                                styles.formInputContainer,
+                                                focusedField === 'clientName' && styles.formInputContainerFocused
+                                            ]}>
+                                                <Ionicons name="storefront-outline" size={20} color="#666" style={styles.formInputIcon} />
+                                                <TextInput
+                                                    placeholder="Nom du point de vente"
+                                                    placeholderTextColor="#AAA"
+                                                    style={styles.formInputField}
+                                                    value={clientName}
+                                                    onChangeText={setClientName}
+                                                    onFocus={() => setFocusedField('clientName')}
+                                                // onBlur intentionally removed to prevent flickering
+                                                />
+                                            </View>
+
+                                            {/* Nom du responsable */}
+                                            <View style={[
+                                                styles.formInputContainer,
+                                                focusedField === 'managerName' && styles.formInputContainerFocused
+                                            ]}>
+                                                <Ionicons name="person-outline" size={20} color="#666" style={styles.formInputIcon} />
+                                                <TextInput
+                                                    placeholder="Nom du responsable"
+                                                    placeholderTextColor="#AAA"
+                                                    style={styles.formInputField}
+                                                    value={managerName}
+                                                    onChangeText={setManagerName}
+                                                    onFocus={() => setFocusedField('managerName')}
+                                                // onBlur intentionally removed
+                                                />
+                                            </View>
+
+                                            {/* Numéro de téléphone */}
+                                            <View style={[
+                                                styles.formInputContainer,
+                                                focusedField === 'clientPhone' && styles.formInputContainerFocused
+                                            ]}>
+                                                <Ionicons name="call-outline" size={20} color="#666" style={styles.formInputIcon} />
+                                                <TextInput
+                                                    placeholder="Numéro de téléphone"
+                                                    placeholderTextColor="#AAA"
+                                                    keyboardType="phone-pad"
+                                                    style={styles.formInputField}
+                                                    value={clientPhone}
+                                                    onChangeText={setClientPhone}
+                                                    onFocus={() => setFocusedField('clientPhone')}
+                                                // onBlur intentionally removed
+                                                />
+                                            </View>
+
+                                            {/* Adresse complète */}
+                                            <View style={[
+                                                styles.formInputContainer,
+                                                focusedField === 'address' && styles.formInputContainerFocused
+                                            ]}>
+                                                <Ionicons name="location-outline" size={20} color="#666" style={styles.formInputIcon} />
+                                                <TextInput
+                                                    placeholder="Adresse complète"
+                                                    placeholderTextColor="#AAA"
+                                                    style={styles.formInputField}
+                                                    value={address}
+                                                    onChangeText={setAddress}
+                                                    onFocus={() => setFocusedField('address')}
+                                                // onBlur intentionally removed
+                                                />
+                                            </View>
+
+                                            {/* Coordonnées GPS */}
+                                            <View style={[styles.formInputContainer, { backgroundColor: '#E8F5E9' }]}>
+                                                <Ionicons name="compass-outline" size={20} color="#2E7D32" style={styles.formInputIcon} />
+                                                <View style={{ flex: 1, justifyContent: 'center' }}>
+                                                    {isGpsLoading ? (
+                                                        <Text style={{ color: '#666', fontStyle: 'italic' }}>Acquisition GPS en cours...</Text>
+                                                    ) : (
+                                                        <Text style={{ color: '#2E7D32', fontWeight: '600' }}>
+                                                            {gpsCoords || "Coordonnées non disponibles"}
+                                                        </Text>
+                                                    )}
+                                                </View>
+                                                {!isGpsLoading && gpsCoords && (
+                                                    <Ionicons name="checkmark-circle" size={20} color="#2E7D32" />
+                                                )}
+                                            </View>
+
                                         </View>
                                     )}
                                 </View>
@@ -381,30 +496,6 @@ export const DeliveryForm: React.FC<DeliveryFormProps> = ({ visible, onClose, on
                                         />
                                     </View>
 
-                                    {/* Proof Section */}
-                                    <View style={styles.sectionContainer}>
-                                        <Text style={{ marginBottom: 10, fontWeight: 'bold', fontSize: 16 }}>Preuves de livraison</Text>
-                                        <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF', padding: 15, borderRadius: 10, borderWidth: 1, borderStyle: 'dashed', borderColor: '#AAA', justifyContent: 'center', marginBottom: 10 }}>
-                                            <Ionicons name="camera-outline" size={24} color="#666" />
-                                            <Text style={{ marginLeft: 10, color: '#666' }}>Photo de preuve (Optionnel)</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF', padding: 15, borderRadius: 10, borderWidth: 1, borderStyle: 'dashed', borderColor: '#AAA', justifyContent: 'center' }}>
-                                            <Ionicons name="pencil-outline" size={24} color="#666" />
-                                            <Text style={{ marginLeft: 10, color: '#666' }}>Signature Client</Text>
-                                        </TouchableOpacity>
-                                    </View>
-
-                                    {/* GPS Section */}
-                                    <View style={styles.gpsContainer}>
-                                        {gpsLocked ? (
-                                            <Ionicons name="checkmark-circle" size={20} color="#2E7D32" />
-                                        ) : (
-                                            <Ionicons name="sync" size={20} color="#666" />
-                                        )}
-                                        <Text style={[styles.gpsText, !gpsLocked && { color: '#666' }]}>
-                                            {gpsLocked ? 'Position GPS Validée' : 'Acquisition GPS...'}
-                                        </Text>
-                                    </View>
                                 </View>
                             )}
 

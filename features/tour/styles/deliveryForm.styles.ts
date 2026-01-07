@@ -100,7 +100,7 @@ export const deliveryFormStyles = StyleSheet.create({
         backgroundColor: '#F4F5F7',
     },
     clientCardSelected: {
-        backgroundColor: '#FFE55C',
+        backgroundColor: '#0ea6e9',
     },
 
     // Header (Avatar + Nom)
@@ -129,7 +129,7 @@ export const deliveryFormStyles = StyleSheet.create({
     // Company Text
     cardSubtitle: {
         fontSize: 13,
-        color: '#888888',
+        color: '#004D40',
         marginBottom: 20,
         fontWeight: '400',
     },
@@ -164,7 +164,7 @@ export const deliveryFormStyles = StyleSheet.create({
     },
     pipelineText: {
         fontSize: 9,
-        color: '#888888',
+        color: '#004D40',
         marginTop: 2,
     },
 
@@ -292,4 +292,44 @@ export const deliveryFormStyles = StyleSheet.create({
     textInput: { backgroundColor: '#F9F9F9', padding: 15, borderRadius: 12, fontSize: 16, marginBottom: 10 },
     gpsContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#E8F5E9', padding: 10, borderRadius: 10, marginTop: 10 },
     gpsText: { color: '#2E7D32', fontWeight: '600', marginLeft: 8, fontSize: 13 },
+
+    // --- New Form Styles (Design Match) ---
+    formTitle: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        color: '#1A1A1A',
+        marginBottom: 8,
+        textAlign: 'center',
+    },
+    formSubtitle: {
+        fontSize: 14,
+        color: '#666',
+        marginBottom: 25,
+        textAlign: 'center',
+    },
+    formInputContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#FFFFFF',
+        borderRadius: 16, // More squared corners
+        paddingHorizontal: 20,
+        height: 56,
+        marginBottom: 16,
+        borderWidth: 1,
+        borderColor: '#E0E0E0', // Grey border
+    },
+    formInputContainerFocused: {
+        borderColor: '#333', // Becomes white on focus
+        borderWidth: 2, // Highlight slightly more prominently
+    },
+    formInputIcon: {
+        marginRight: 15,
+        opacity: 0.5,
+    },
+    formInputField: {
+        flex: 1,
+        fontSize: 16,
+        color: '#333',
+        height: '100%',
+    },
 });
