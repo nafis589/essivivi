@@ -105,19 +105,22 @@ export default function RegisterScreen() {
 
     /* ------------------ UI ------------------ */
 
-    const renderProgressBar = () => (
-        <View style={styles.progressContainer}>
-            <View style={styles.progressTrack}>
-                <View
-                    style={[
-                        styles.progressBar,
-                        { width: step === 1 ? '50%' : '100%' },
-                    ]}
-                />
+    const renderProgressBar = () => {
+        const progressWidth = step === 1 ? '33%' : step === 2 ? '66%' : '100%';
+        return (
+            <View style={styles.progressContainer}>
+                <View style={styles.progressTrack}>
+                    <View
+                        style={[
+                            styles.progressBar,
+                            { width: progressWidth },
+                        ]}
+                    />
+                </View>
+                <Text style={styles.stepText}>Étape {step} sur 3</Text>
             </View>
-            <Text style={styles.stepText}>Étape {step} sur 2</Text>
-        </View>
-    );
+        );
+    };
 
     const renderStep1 = () => (
         <View style={styles.stepContainer}>
@@ -203,26 +206,30 @@ export default function RegisterScreen() {
     );
 
     const renderStep2 = () => (
-        <View style={newStyles.formContainer}>
+        <View style={styles.stepContainer}>
+            {/* Using styles.heroTitle/subtitle to match Step 1 typography */}
+            <Text style={styles.heroTitle}>Informations</Text>
+            <Text style={styles.subtitle}>Complétez vos informations personnelles</Text>
+
             {/* Your Name Input */}
-            <View style={newStyles.inputGroup}>
-                <Text style={newStyles.label}>Nom complet:</Text>
+            <View style={inputStyles.inputGroup}>
+                <Text style={inputStyles.label}>Nom complet:</Text>
                 <TextInput
-                    style={newStyles.input}
-                    placeholder="David Johnson"
-                    placeholderTextColor="#A0A5BD"
+                    style={inputStyles.input}
+                    placeholder="Entrez votre nom complet"
+                    placeholderTextColor="#666"
                     value={fullName}
                     onChangeText={setFullName}
                 />
             </View>
 
             {/* E-mail Input */}
-            <View style={newStyles.inputGroup}>
-                <Text style={newStyles.label}>E-mail:</Text>
+            <View style={inputStyles.inputGroup}>
+                <Text style={inputStyles.label}>E-mail:</Text>
                 <TextInput
-                    style={newStyles.input}
-                    placeholder="login@email.com"
-                    placeholderTextColor="#A0A5BD"
+                    style={inputStyles.input}
+                    placeholder="Entrez votre adresse email"
+                    placeholderTextColor="#666"
                     keyboardType="email-address"
                     value={email}
                     onChangeText={setEmail}
@@ -231,38 +238,44 @@ export default function RegisterScreen() {
             </View>
 
             {/* Date of Birth Input */}
-            <View style={newStyles.inputGroup}>
-                <Text style={newStyles.label}>Date de naissance:</Text>
-                <View style={newStyles.dateInput}>
+            <View style={inputStyles.inputGroup}>
+                <Text style={inputStyles.label}>Date de naissance:</Text>
+                <View style={inputStyles.dateInput}>
                     <TextInput
-                        style={[newStyles.dateText, { flex: 1 }]}
+                        style={[inputStyles.dateText, { flex: 1, color: '#FFF' }]}
                         placeholder="07 November, 1986"
-                        placeholderTextColor="#A0A5BD"
+                        placeholderTextColor="#666"
                         value={dob}
                         onChangeText={setDob}
                     />
-                    <Ionicons name="chevron-down" size={20} color="#333" />
+                    <Ionicons name="chevron-down" size={20} color="#FFF" />
                 </View>
             </View>
 
-            {/* FOOTER BUTTON FOR STEP 2 */}
-            <View style={newStyles.footer}>
-                <TouchableOpacity style={newStyles.continueButton} onPress={handleNextStep}>
-                    <Text style={newStyles.continueButtonText}>Continuer</Text>
-                </TouchableOpacity>
-            </View>
+            <TouchableOpacity
+                style={[
+                    styles.continueButton,
+                    // slightly adjusting style to match step 1 button look if needed, but styles.continueButton is white
+                ]}
+                onPress={handleNextStep}
+            >
+                <Text style={styles.continueButtonText}>Continuer</Text>
+            </TouchableOpacity>
         </View>
     );
 
     const renderStep3 = () => (
-        <View style={newStyles.formContainer}>
+        <View style={styles.stepContainer}>
+            <Text style={styles.heroTitle}>Sécurité</Text>
+            <Text style={styles.subtitle}>Sécurisez votre compte</Text>
+
             {/* Phone Input */}
-            <View style={newStyles.inputGroup}>
-                <Text style={newStyles.label}>Numéro de téléphone:</Text>
+            <View style={inputStyles.inputGroup}>
+                <Text style={inputStyles.label}>Numéro de téléphone:</Text>
                 <TextInput
-                    style={newStyles.input}
+                    style={inputStyles.input}
                     placeholder="+228 90 00 00 00"
-                    placeholderTextColor="#A0A5BD"
+                    placeholderTextColor="#666"
                     keyboardType="phone-pad"
                     value={phone}
                     onChangeText={setPhone}
@@ -270,12 +283,12 @@ export default function RegisterScreen() {
             </View>
 
             {/* Password Input */}
-            <View style={newStyles.inputGroup}>
-                <Text style={newStyles.label}>Mot de passe:</Text>
+            <View style={inputStyles.inputGroup}>
+                <Text style={inputStyles.label}>Mot de passe:</Text>
                 <TextInput
-                    style={newStyles.input}
-                    placeholder="********"
-                    placeholderTextColor="#A0A5BD"
+                    style={inputStyles.input}
+                    placeholder="Entrez votre mot de passe"
+                    placeholderTextColor="#666"
                     secureTextEntry
                     value={password}
                     onChangeText={setPassword}
@@ -283,12 +296,12 @@ export default function RegisterScreen() {
             </View>
 
             {/* Confirm Password Input */}
-            <View style={newStyles.inputGroup}>
-                <Text style={newStyles.label}>Confirmer le mot de passe:</Text>
+            <View style={inputStyles.inputGroup}>
+                <Text style={inputStyles.label}>Confirmer le mot de passe:</Text>
                 <TextInput
-                    style={newStyles.input}
-                    placeholder="********"
-                    placeholderTextColor="#A0A5BD"
+                    style={inputStyles.input}
+                    placeholder="Confirmer le mot de passe"
+                    placeholderTextColor="#666"
                     secureTextEntry
                     value={confirmPassword}
                     onChangeText={setConfirmPassword}
@@ -297,207 +310,123 @@ export default function RegisterScreen() {
 
             {/* Terms Checkbox */}
             <TouchableOpacity
-                style={newStyles.checkboxContainer}
+                style={inputStyles.checkboxContainer}
                 onPress={() => setIsChecked(!isChecked)}
                 activeOpacity={0.8}
             >
-                <View style={[newStyles.checkbox, isChecked && newStyles.checkboxChecked]}>
+                <View style={[inputStyles.checkbox, isChecked && inputStyles.checkboxChecked]}>
                     {isChecked && <Ionicons name="checkmark" size={16} color="#FFF" />}
                 </View>
-                <Text style={newStyles.checkboxLabel}>
-                    J'accepte les <Text style={newStyles.linkText}>conditions d'utilisation</Text>
+                <Text style={inputStyles.checkboxLabel}>
+                    J'accepte les <Text style={styles.linkText}>conditions d'utilisation</Text>
                 </Text>
             </TouchableOpacity>
 
-            {/* FOOTER BUTTON FOR STEP 3 */}
-            <View style={newStyles.footer}>
-                <TouchableOpacity
-                    style={[newStyles.continueButton, { opacity: isChecked ? 1 : 0.7 }]}
-                    onPress={handleRegister}
-                    disabled={!isChecked || isLoading}
-                >
-                    <Text style={newStyles.continueButtonText}>
-                        {isLoading ? 'Création en cours...' : 'Créer le compte'}
-                    </Text>
-                </TouchableOpacity>
-            </View>
+            <TouchableOpacity
+                style={[
+                    styles.continueButton,
+                    !isChecked && styles.continueButtonDisabled
+                ]}
+                onPress={handleRegister}
+                disabled={!isChecked || isLoading}
+            >
+                <Text style={[styles.continueButtonText, { color: '#000' }]}>
+                    {isLoading ? 'Création en cours...' : 'Créer le compte'}
+                </Text>
+            </TouchableOpacity>
         </View>
     );
 
-    if (step === 1) {
-        // Step 1: Use existing dark theme layout
-        return (
-            <SafeAreaView style={styles.container}>
-                <StatusBar barStyle="light-content" backgroundColor={Palette.background} />
-                <View style={styles.topBar}>
-                    <TouchableOpacity onPress={handlePrevStep} style={styles.backButton}>
-                        <Ionicons name="arrow-back" size={24} color={Palette.text} />
-                    </TouchableOpacity>
-                    <Text style={styles.brandName}>Inscription</Text>
-                </View>
-                {renderProgressBar()}
-                <KeyboardAvoidingView
-                    style={{ flex: 1 }}
-                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                >
-                    <ScrollView contentContainerStyle={styles.scrollContent}>
-                        {renderStep1()}
-                        <View style={styles.footer}>
-                            <Text style={styles.footerText}>Déjà un compte ? </Text>
-                            <TouchableOpacity onPress={() => router.replace('/login')}>
-                                <Text style={styles.linkText}>Se connecter</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </ScrollView>
-                </KeyboardAvoidingView>
-            </SafeAreaView>
-        );
-    }
-
-    // Steps 2 and 3: Use new light theme layout
     return (
-        <SafeAreaView style={newStyles.container}>
-            <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-            <ScrollView contentContainerStyle={newStyles.scrollContainer}>
-                {/* HEADER */}
-                <View style={newStyles.header}>
-                    <TouchableOpacity style={newStyles.backButton} onPress={handlePrevStep}>
-                        <Ionicons name="chevron-back" size={24} color="#5e6b8b" />
-                    </TouchableOpacity>
-                    <Text style={newStyles.logoText}>Essivivi</Text>
-                    <View style={{ width: 40 }} />
-                </View>
+        <SafeAreaView style={styles.container}>
+            <StatusBar barStyle="light-content" backgroundColor={Palette.background} />
 
-                {/* TITLE */}
-                <Text style={newStyles.title}>
-                    {step === 2 ? 'Informations' : 'Sécurité'}
-                </Text>
+            <View style={styles.topBar}>
+                <TouchableOpacity onPress={handlePrevStep} style={styles.backButton}>
+                    <Ionicons name="arrow-back" size={24} color={Palette.text} />
+                </TouchableOpacity>
+                <Text style={styles.brandName}>Inscription</Text>
+            </View>
 
-                {step === 2 ? renderStep2() : renderStep3()}
+            {renderProgressBar()}
 
-            </ScrollView>
+            <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            >
+                <ScrollView contentContainerStyle={styles.scrollContent}>
+                    {step === 1 ? renderStep1() : step === 2 ? renderStep2() : renderStep3()}
+
+                    <View style={styles.footer}>
+                        <Text style={styles.footerText}>Déjà un compte ? </Text>
+                        <TouchableOpacity onPress={() => router.replace('/login')}>
+                            <Text style={styles.linkText}>Se connecter</Text>
+                        </TouchableOpacity>
+                    </View>
+                </ScrollView>
+            </KeyboardAvoidingView>
         </SafeAreaView>
     );
 }
 
-const newStyles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#FFFFFF',
-    },
-    scrollContainer: {
-        paddingHorizontal: 24,
-        paddingTop: 10,
-        paddingBottom: 40,
-    },
-    /* Header Styles */
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginBottom: 30,
-        marginTop: 10,
-    },
-    backButton: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: '#F2F4FC',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    logoText: {
-        fontSize: 22,
-        fontWeight: '900',
-        color: '#0022CC', // Le bleu foncé du logo
-        letterSpacing: 0.5,
-    },
-    /* Title Styles */
-    title: {
-        fontSize: 28,
-        fontWeight: 'bold',
-        color: '#1A1A1A',
-        marginBottom: 30,
-        textAlign: 'center',
-    },
-    /* Form Styles */
-    formContainer: {
-        marginBottom: 20,
-    },
+const inputStyles = StyleSheet.create({
     inputGroup: {
         marginBottom: 20,
     },
     label: {
         fontSize: 15,
         fontWeight: '600',
-        color: '#333333',
+        color: '#FFF',
         marginBottom: 8,
     },
     input: {
-        backgroundColor: '#EEF1FA', // Le fond bleu très clair/violet
+        backgroundColor: '#1C1C1E', // Dark background matching Step 1 cards
         borderRadius: 16,
         paddingVertical: 16,
         paddingHorizontal: 20,
         fontSize: 16,
-        color: '#333',
+        color: '#FFF',
+        borderWidth: 1,
+        borderColor: '#333',
     },
     dateInput: {
-        backgroundColor: '#EEF1FA',
+        backgroundColor: '#1C1C1E',
         borderRadius: 16,
         paddingVertical: 16,
         paddingHorizontal: 20,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+        borderWidth: 1,
+        borderColor: '#333',
     },
     dateText: {
         fontSize: 16,
-        color: '#333',
+        color: '#FFF',
     },
-    /* Checkbox Styles */
     checkboxContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         marginTop: 10,
+        marginBottom: 30,
     },
     checkbox: {
         width: 24,
         height: 24,
         borderRadius: 6,
-        backgroundColor: '#EEF1FA',
+        backgroundColor: '#1C1C1E',
         marginRight: 12,
         alignItems: 'center',
         justifyContent: 'center',
+        borderWidth: 1,
+        borderColor: '#333',
     },
     checkboxChecked: {
-        backgroundColor: '#0022CC',
+        backgroundColor: Palette.primary,
+        borderColor: Palette.primary,
     },
     checkboxLabel: {
         fontSize: 15,
-        color: '#333',
-    },
-    linkText: {
-        color: '#0022CC',
-        fontWeight: '500',
-    },
-    /* Footer Button */
-    footer: {
-        marginTop: 40,
-    },
-    continueButton: {
-        backgroundColor: '#0022CC', // Bleu vibrant
-        borderRadius: 30,
-        paddingVertical: 18,
-        alignItems: 'center',
-        shadowColor: '#0022CC',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
-        elevation: 5,
-    },
-    continueButtonText: {
-        color: '#FFFFFF',
-        fontSize: 16,
-        fontWeight: '600',
+        color: '#FFF',
     },
 });
