@@ -51,7 +51,7 @@ export default function HomeScreen() {
 
       {/* --- HEADER --- */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.profileContainer} onPress={() => router.push('/profile')}>
+        <TouchableOpacity style={styles.profileContainer} onPress={() => router.push('/profile' as any)}>
           <Image
             source={{ uri: 'https://randomuser.me/api/portraits/men/32.jpg' }}
             style={styles.avatar}

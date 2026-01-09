@@ -23,8 +23,8 @@ const ProfileScreen = () => {
     const router = useRouter();
 
     // Composant pour les lignes du menu
-    const MenuItem = ({ icon: Icon, label }: { icon: any, label: string }) => (
-        <TouchableOpacity style={styles.menuItem}>
+    const MenuItem = ({ icon: Icon, label, onPress }: { icon: any, label: string, onPress?: () => void }) => (
+        <TouchableOpacity style={styles.menuItem} onPress={onPress}>
             <View style={styles.menuItemLeft}>
                 <View style={styles.iconContainer}>
                     <Icon color="#555" size={20} />
@@ -61,7 +61,11 @@ const ProfileScreen = () => {
 
                 {/* Liste des Options */}
                 <View style={styles.menuCard}>
-                    <MenuItem icon={User} label="Informations Personnelles" />
+                    <MenuItem
+                        icon={User}
+                        label="Informations Personnelles"
+                        onPress={() => router.push('/profile/personal-info')}
+                    />
                     <MenuItem icon={Wallet} label="Modification de mot de passe" />
                     <MenuItem icon={Calendar} label="Mon adresse" />
                     <MenuItem icon={Heart} label="Notification" />
