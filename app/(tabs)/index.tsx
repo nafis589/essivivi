@@ -3,6 +3,7 @@ import { COLORS, dashboardStyles as styles } from '@/features/dashboard/styles/d
 import { DeliveryForm } from '@/features/tour/components/DeliveryForm';
 import { TourSummary } from '@/features/tour/components/TourSummary';
 import { FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
 import {
   Image,
@@ -37,6 +38,7 @@ export default function HomeScreen() {
     cancelEndTour,
     confirmEndTour
   } = useDashboard();
+  const router = useRouter();
 
   // Trigger animation on state change
   useEffect(() => {
@@ -49,7 +51,7 @@ export default function HomeScreen() {
 
       {/* --- HEADER --- */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.profileContainer}>
+        <TouchableOpacity style={styles.profileContainer} onPress={() => router.push('/profile')}>
           <Image
             source={{ uri: 'https://randomuser.me/api/portraits/men/32.jpg' }}
             style={styles.avatar}
