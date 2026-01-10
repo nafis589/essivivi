@@ -207,9 +207,10 @@ export default function RegisterScreen() {
 
     const renderStep2 = () => (
         <View style={styles.stepContainer}>
-            {/* Using styles.heroTitle/subtitle to match Step 1 typography */}
-            <Text style={styles.heroTitle}>Informations</Text>
-            <Text style={styles.subtitle}>Complétez vos informations personnelles</Text>
+            <View style={inputStyles.headerContainer}>
+                <Text style={inputStyles.headerTitle}>Information personnelles</Text>
+                <Text style={inputStyles.headerSubtitle}>Complétez vos infos personnelles</Text>
+            </View>
 
             {/* Your Name Input */}
             <View style={inputStyles.inputGroup}>
@@ -266,8 +267,10 @@ export default function RegisterScreen() {
 
     const renderStep3 = () => (
         <View style={styles.stepContainer}>
-            <Text style={styles.heroTitle}>Sécurité</Text>
-            <Text style={styles.subtitle}>Sécurisez votre compte</Text>
+            <View style={inputStyles.headerContainer}>
+                <Text style={inputStyles.headerTitle}>Information de sécurité</Text>
+                <Text style={inputStyles.headerSubtitle}>Sécurisez votre compte</Text>
+            </View>
 
             {/* Phone Input */}
             <View style={inputStyles.inputGroup}>
@@ -370,6 +373,22 @@ export default function RegisterScreen() {
 }
 
 const inputStyles = StyleSheet.create({
+    headerContainer: {
+        alignItems: 'center',
+        marginBottom: 30,
+    },
+    headerTitle: {
+        fontSize: 32,
+        fontWeight: 'bold',
+        color: '#FFF',
+        textAlign: 'center',
+        marginBottom: 8,
+    },
+    headerSubtitle: {
+        fontSize: 16,
+        color: '#A0A5BD',
+        textAlign: 'center',
+    },
     inputGroup: {
         marginBottom: 20,
     },
