@@ -14,12 +14,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 const PersonalInfoScreen = () => {
     const router = useRouter();
 
-    const InfoItem = ({ label, value, isLast = false }: { label: string, value: string, isLast?: boolean }) => (
-        <TouchableOpacity style={[styles.infoItem, isLast && styles.noBorder]}>
+    const InfoItem = ({ label, value, isLast = false, onPress }: { label: string, value: string, isLast?: boolean, onPress?: () => void }) => (
+        <TouchableOpacity
+            style={[styles.infoItem, isLast && styles.noBorder]}
+            onPress={onPress}
+            disabled={!onPress}
+        >
             <Text style={styles.infoLabel}>{label}</Text>
             <View style={styles.infoValueContainer}>
                 <Text style={styles.infoValue}>{value}</Text>
-                <ChevronRight size={18} color="#CCC" />
+                {onPress && <ChevronRight size={18} color="#CCC" />}
             </View>
         </TouchableOpacity>
     );
@@ -54,8 +58,35 @@ const PersonalInfoScreen = () => {
                 <View style={styles.card}>
                     <InfoItem label="Numéro d'identification agent" value="AGT-8832" />
                     <InfoItem label="Nom et prénom" value="Albert Warren" />
-                    <InfoItem label="Numéro de téléphone" value="+228 90 12 34 56" />
-                    <InfoItem label="Email" value="albertwarren@example.com" />
+
+                    <InfoItem
+                        label="Numéro de téléphone"
+                        value="+228 90 12 34 56"
+                        onPress={() => router.push({
+                            pathname: '/profile/edit-info',
+                            params: {
+                                field: 'phone',
+                                label: 'Numéro de téléphone',
+                                value: '+228 90 12 34 56',
+                                placeholder: '+228 00 00 00 00'
+                            }
+                        })}
+                    />
+
+                    <InfoItem
+                        label="Email"
+                        value="albertwarren@example.com"
+                        onPress={() => router.push({
+                            pathname: '/profile/edit-info',
+                            params: {
+                                field: 'email',
+                                label: 'Email',
+                                value: 'albertwarren@example.com',
+                                placeholder: 'exemple@gmail.com'
+                            }
+                        })}
+                    />
+
                     <InfoItem label="Date de naissance" value="22 septembre 2000" />
                     <PhotoItem />
                     <InfoItem label="Tricycle assigné" value="TG-1234-AB" isLast />
