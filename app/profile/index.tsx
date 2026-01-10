@@ -66,7 +66,11 @@ const ProfileScreen = () => {
                         label="Informations Personnelles"
                         onPress={() => router.push('/profile/personal-info')}
                     />
-                    <MenuItem icon={Wallet} label="Modification de mot de passe" />
+                    <MenuItem
+                        icon={Wallet}
+                        label="Modification de mot de passe"
+                        onPress={() => router.push('/profile/change-password')}
+                    />
                     <MenuItem icon={Calendar} label="Mon adresse" />
                     <MenuItem icon={Heart} label="Notification" />
                     <MenuItem icon={Bell} label="Se deconnecter" />

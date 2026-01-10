@@ -56,6 +56,7 @@ const PersonalInfoScreen = () => {
                     <InfoItem label="Nom et prénom" value="Albert Warren" />
                     <InfoItem label="Numéro de téléphone" value="+228 90 12 34 56" />
                     <InfoItem label="Email" value="albertwarren@example.com" />
+                    <InfoItem label="Date de naissance" value="22 septembre 2000" />
                     <PhotoItem />
                     <InfoItem label="Tricycle assigné" value="TG-1234-AB" isLast />
                 </View>
