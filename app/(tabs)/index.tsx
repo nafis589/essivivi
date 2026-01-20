@@ -219,7 +219,7 @@ export default function HomeScreen() {
             <Ionicons name="home" size={24} color={COLORS.primary} />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.navItem}>
+          <TouchableOpacity style={styles.navItem} onPress={() => router.push('/(tabs)/history')}>
             <MaterialCommunityIcons name="history" size={24} color="#666" />
           </TouchableOpacity>
 
