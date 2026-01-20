@@ -1,9 +1,13 @@
+import { useDashboard } from '@/features/dashboard/hooks/useDashboard';
 import { COLORS, dashboardStyles } from '@/features/dashboard/styles/dashboard.styles';
+import { DeliveryForm } from '@/features/tour/components/DeliveryForm';
+import { TourSummary } from '@/features/tour/components/TourSummary';
 import { FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     FlatList,
+    Keyboard,
     ListRenderItem,
     Platform,
     SafeAreaView,
@@ -78,15 +82,45 @@ const DATA: Transaction[] = [
 type FilterType = 'Date' | 'Client' | 'Montant';
 
 const HistoryScreen: React.FC = () => {
+    // Shared State from Context
+    const {
+        isTourActive,
+        startTour,
+        openDeliveryForm,
+        showDeliveryForm,
+        closeDeliveryForm,
+        handleAddDelivery,
+        showSummary,
+        cancelEndTour,
+        confirmEndTour,
+        stats
+    } = useDashboard();
+
     const [activeFilter, setActiveFilter] = useState<FilterType>('Date');
     const [searchQuery, setSearchQuery] = useState('');
+    const [isKeyboardVisible, setKeyboardVisible] = useState(false);
     const filters: FilterType[] = ['Date', 'Client', 'Montant'];
     const router = useRouter();
+
+    // Keyboard Listener
+    useEffect(() => {
+        const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
+            setKeyboardVisible(true);
+        });
+        const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+            setKeyboardVisible(false);
+        });
+
+        return () => {
+            showSubscription.remove();
+            hideSubscription.remove();
+        };
+    }, []);
 
     const renderItem: ListRenderItem<Transaction> = ({ item }) => (
         <View style={localStyles.itemContainer}>
             <View style={localStyles.iconWrapper}>
-                <Ionicons name="person" size={20} color={COLORS.primary} />
+                <Ionicons name="person-circle" size={50} color={COLORS.primary} />
             </View>
             <View style={localStyles.detailsContainer}>
                 <Text style={localStyles.destinationText} numberOfLines={2}>
@@ -155,43 +189,69 @@ const HistoryScreen: React.FC = () => {
                 data={DATA}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id}
-                contentContainerStyle={[localStyles.listContent, { paddingBottom: 110 }]} // Add padding for bottom nav
+                contentContainerStyle={[localStyles.listContent, { paddingBottom: 110 }]}
                 showsVerticalScrollIndicator={false}
             />
 
-            {/* --- BOTTOM NAVIGATION (Replicated from Dashboard) --- */}
-            <View style={dashboardStyles.bottomNavWrapper}>
-                <View style={dashboardStyles.bottomNavContainer}>
+            {/* --- BOTTOM NAVIGATION (Hidden when keyboard is active) --- */}
+            {!isKeyboardVisible && (
+                <View style={dashboardStyles.bottomNavWrapper}>
+                    <View style={dashboardStyles.bottomNavContainer}>
 
-                    <TouchableOpacity style={dashboardStyles.navItem} onPress={() => router.push('/')}>
-                        <Ionicons name="home-outline" size={24} color="#666" />
-                    </TouchableOpacity>
+                        <TouchableOpacity style={dashboardStyles.navItem} onPress={() => router.push('/')}>
+                            <Ionicons name="home-outline" size={24} color="#666" />
+                        </TouchableOpacity>
 
-                    <TouchableOpacity style={dashboardStyles.navItem}>
-                        {/* Active State for History */}
-                        <MaterialCommunityIcons name="history" size={24} color={COLORS.primary} />
-                    </TouchableOpacity>
+                        <TouchableOpacity style={dashboardStyles.navItem}>
+                            {/* Active State for History */}
+                            <MaterialCommunityIcons name="history" size={24} color={COLORS.primary} />
+                        </TouchableOpacity>
 
-                    <TouchableOpacity
-                        style={dashboardStyles.navMainAction}
-                        activeOpacity={0.9}
-                    // No action logic attached as per request, just visual
-                    >
-                        <View style={dashboardStyles.navMainCircle}>
-                            <FontAwesome5 name="play" size={22} color="#FFF" style={{ marginLeft: 4 }} />
-                        </View>
-                    </TouchableOpacity>
+                        {/* --- MAIN FAB (Shared Logic) --- */}
+                        <TouchableOpacity
+                            style={dashboardStyles.navMainAction}
+                            onPress={isTourActive ? openDeliveryForm : startTour}
+                            activeOpacity={0.9}
+                        >
+                            <View style={[
+                                dashboardStyles.navMainCircle,
+                                isTourActive && { backgroundColor: COLORS.primary } // Keep primary but maybe pulse
+                            ]}>
+                                {isTourActive ? (
+                                    <Ionicons name="add" size={32} color="#FFF" />
+                                ) : (
+                                    <FontAwesome5 name="play" size={22} color="#FFF" style={{ marginLeft: 4 }} />
+                                )}
+                            </View>
+                        </TouchableOpacity>
 
-                    <TouchableOpacity style={dashboardStyles.navItem}>
-                        <Ionicons name="stats-chart" size={24} color="#666" />
-                    </TouchableOpacity>
+                        <TouchableOpacity style={dashboardStyles.navItem}>
+                            <Ionicons name="stats-chart" size={24} color="#666" />
+                        </TouchableOpacity>
 
-                    <TouchableOpacity style={dashboardStyles.navItem}>
-                        <Ionicons name="settings-outline" size={24} color="#666" />
-                    </TouchableOpacity>
+                        <TouchableOpacity style={dashboardStyles.navItem}>
+                            <Ionicons name="settings-outline" size={24} color="#666" />
+                        </TouchableOpacity>
 
+                    </View>
                 </View>
-            </View>
+            )}
+
+            {/* --- MODALS (Shared Logic) --- */}
+            {/* We include these here so the actions work from this screen too */}
+            <DeliveryForm
+                visible={showDeliveryForm}
+                onClose={closeDeliveryForm}
+                onSubmit={handleAddDelivery}
+            />
+
+            <TourSummary
+                visible={showSummary}
+                onCancel={cancelEndTour}
+                onConfirm={confirmEndTour}
+                stats={stats}
+            />
+
         </SafeAreaView>
     );
 };
@@ -224,7 +284,6 @@ const localStyles = StyleSheet.create({
         fontSize: 15,
         color: COLORS.textMain,
         height: '100%',
-        // Remove outline on android
         paddingVertical: 0,
     },
     clearIcon: {
@@ -269,15 +328,15 @@ const localStyles = StyleSheet.create({
     },
     itemContainer: {
         flexDirection: 'row',
-        alignItems: 'flex-start',
+        alignItems: 'center', // Changed from flex-start to center
         paddingVertical: 16,
         paddingHorizontal: 20,
     },
     iconWrapper: {
-        marginTop: 2,
         marginRight: 16,
-        width: 24,
+        // Removed fixed width to allow icon to take space naturally, or set a larger fixed width if needed
         alignItems: 'center',
+        justifyContent: 'center',
     },
     detailsContainer: {
         flex: 1,
@@ -286,7 +345,7 @@ const localStyles = StyleSheet.create({
     destinationText: {
         fontSize: 16,
         color: COLORS.textMain,
-        fontWeight: '400', // Regular weight as per previous request
+        fontWeight: '400',
         marginBottom: 6,
         lineHeight: 22,
     },
