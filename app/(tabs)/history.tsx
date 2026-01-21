@@ -241,7 +241,7 @@ const HistoryScreen: React.FC = () => {
                             </View>
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={dashboardStyles.navItem}>
+                        <TouchableOpacity style={dashboardStyles.navItem} onPress={() => router.push('/(tabs)/statistics')}>
                             <Ionicons name="stats-chart" size={24} color="#666" />
                         </TouchableOpacity>
 

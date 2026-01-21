@@ -243,7 +243,7 @@ export default function HomeScreen() {
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.navItem}>
+          <TouchableOpacity style={styles.navItem} onPress={() => router.push('/(tabs)/statistics')}>
             <Ionicons name="stats-chart" size={24} color="#666" />
           </TouchableOpacity>
 
