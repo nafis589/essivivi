@@ -1,3 +1,4 @@
+import { TransactionDetailModal } from '@/features/dashboard/components/TransactionDetailModal';
 import { useDashboard } from '@/features/dashboard/hooks/useDashboard';
 import { COLORS, dashboardStyles } from '@/features/dashboard/styles/dashboard.styles';
 import { DeliveryForm } from '@/features/tour/components/DeliveryForm';
@@ -99,6 +100,11 @@ const HistoryScreen: React.FC = () => {
     const [activeFilter, setActiveFilter] = useState<FilterType>('Date');
     const [searchQuery, setSearchQuery] = useState('');
     const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+    // DETAIL MODAL STATE
+    const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+    const [showDetailModal, setShowDetailModal] = useState(false);
+
     const filters: FilterType[] = ['Date', 'Client', 'Montant'];
     const router = useRouter();
 
@@ -117,8 +123,18 @@ const HistoryScreen: React.FC = () => {
         };
     }, []);
 
+    // Handle Item Click
+    const handlePressItem = (item: Transaction) => {
+        setSelectedTransaction(item);
+        setShowDetailModal(true);
+    };
+
     const renderItem: ListRenderItem<Transaction> = ({ item }) => (
-        <View style={localStyles.itemContainer}>
+        <TouchableOpacity
+            style={localStyles.itemContainer}
+            activeOpacity={0.7}
+            onPress={() => handlePressItem(item)}
+        >
             <View style={localStyles.iconWrapper}>
                 <Ionicons name="person-circle" size={50} color={COLORS.primary} />
             </View>
@@ -134,7 +150,7 @@ const HistoryScreen: React.FC = () => {
                     <Text style={localStyles.pointsText}>{item.points}</Text>
                 ) : null}
             </View>
-        </View>
+        </TouchableOpacity>
     );
 
     return (
@@ -237,8 +253,7 @@ const HistoryScreen: React.FC = () => {
                 </View>
             )}
 
-            {/* --- MODALS (Shared Logic) --- */}
-            {/* We include these here so the actions work from this screen too */}
+            {/* --- MODALS (Shared & Detail) --- */}
             <DeliveryForm
                 visible={showDeliveryForm}
                 onClose={closeDeliveryForm}
@@ -250,6 +265,12 @@ const HistoryScreen: React.FC = () => {
                 onCancel={cancelEndTour}
                 onConfirm={confirmEndTour}
                 stats={stats}
+            />
+
+            <TransactionDetailModal
+                visible={showDetailModal}
+                transaction={selectedTransaction}
+                onClose={() => setShowDetailModal(false)}
             />
 
         </SafeAreaView>
@@ -328,13 +349,12 @@ const localStyles = StyleSheet.create({
     },
     itemContainer: {
         flexDirection: 'row',
-        alignItems: 'center', // Changed from flex-start to center
+        alignItems: 'center', // Centered alignment
         paddingVertical: 16,
         paddingHorizontal: 20,
     },
     iconWrapper: {
         marginRight: 16,
-        // Removed fixed width to allow icon to take space naturally, or set a larger fixed width if needed
         alignItems: 'center',
         justifyContent: 'center',
     },
