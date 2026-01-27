@@ -425,11 +425,7 @@ const styles = StyleSheet.create({
         height: 120,
         justifyContent: 'space-between',
         // Shadow
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
+
         borderWidth: 1,
         borderColor: '#F0F0F0',
     },

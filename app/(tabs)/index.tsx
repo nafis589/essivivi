@@ -1,10 +1,12 @@
+import { HistoryItem, Transaction } from '@/features/dashboard/components/HistoryItem';
+import { TransactionDetailModal } from '@/features/dashboard/components/TransactionDetailModal';
 import { useDashboard } from '@/features/dashboard/hooks/useDashboard';
 import { COLORS, dashboardStyles as styles } from '@/features/dashboard/styles/dashboard.styles';
 import { DeliveryForm } from '@/features/tour/components/DeliveryForm';
 import { TourSummary } from '@/features/tour/components/TourSummary';
 import { FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Image,
   LayoutAnimation,
@@ -38,7 +40,37 @@ export default function HomeScreen() {
     cancelEndTour,
     confirmEndTour
   } = useDashboard();
+
   const router = useRouter();
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+
+  const RECENT_TRANSACTIONS: Transaction[] = [
+    {
+      id: '1',
+      destination: "Ride to Fat Tony's Burger Legian",
+      date: '22 Dec 2022, 1:34 PM',
+      price: 'Rp103.000',
+    },
+    {
+      id: '2',
+      destination: 'Ride to 121',
+      date: '30 Nov 2022, 1:27 AM',
+      price: 'S$26.80',
+    },
+    {
+      id: '3',
+      destination: 'Ride to Saigon Centre - Nam Ky Khoi Nghia Gate',
+      date: '2 Aug 2022, 9:39 AM',
+      price: '59.000₫',
+      points: '+3 points',
+    }
+  ];
+
+  const handlePressItem = (item: Transaction) => {
+    setSelectedTransaction(item);
+    setShowDetailModal(true);
+  };
 
   // Trigger animation on state change
   useEffect(() => {
@@ -176,37 +208,20 @@ export default function HomeScreen() {
         {/* --- LISTE RÉCENTE --- */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>
-            {isTourActive ? 'Dernières livraisons' : 'Plans de tournée'}
+            Dernières livraisons
           </Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push('/(tabs)/history')}>
             <Text style={styles.seeAllText}>Voir tout</Text>
           </TouchableOpacity>
         </View>
 
         {/* Liste items mockés */}
-        {[1, 2, 3].map((item, index) => (
-          <View key={index} style={styles.listItem}>
-            <View style={styles.listIconContainer}>
-              <Image
-                source={{ uri: `https://randomuser.me/api/portraits/women/${40 + index}.jpg` }}
-                style={styles.clientAvatar}
-              />
-              <View style={styles.listBadgeIcon}>
-                <MaterialCommunityIcons name="water" size={12} color="#FFF" />
-              </View>
-            </View>
-
-            <View style={styles.listContent}>
-              <Text style={styles.clientName}>Client Standard #{index + 1}</Text>
-              <Text style={styles.listDate}>
-                {isTourActive ? 'Livré à 10:30' : 'Prévu aujourd\'hui'}
-              </Text>
-            </View>
-
-            <TouchableOpacity style={styles.listBtn}>
-              <Text style={styles.listBtnText}>Détails</Text>
-            </TouchableOpacity>
-          </View>
+        {RECENT_TRANSACTIONS.map((item) => (
+          <HistoryItem
+            key={item.id}
+            item={item}
+            onPress={handlePressItem}
+          />
         ))}
 
       </ScrollView>
@@ -266,6 +281,12 @@ export default function HomeScreen() {
         onCancel={cancelEndTour}
         onConfirm={confirmEndTour}
         stats={stats}
+      />
+
+      <TransactionDetailModal
+        visible={showDetailModal}
+        transaction={selectedTransaction}
+        onClose={() => setShowDetailModal(false)}
       />
 
     </SafeAreaView>

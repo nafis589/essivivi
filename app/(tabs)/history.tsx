@@ -1,3 +1,4 @@
+import { HistoryItem } from '@/features/dashboard/components/HistoryItem';
 import { TransactionDetailModal } from '@/features/dashboard/components/TransactionDetailModal';
 import { useDashboard } from '@/features/dashboard/hooks/useDashboard';
 import { COLORS, dashboardStyles } from '@/features/dashboard/styles/dashboard.styles';
@@ -130,27 +131,10 @@ const HistoryScreen: React.FC = () => {
     };
 
     const renderItem: ListRenderItem<Transaction> = ({ item }) => (
-        <TouchableOpacity
-            style={localStyles.itemContainer}
-            activeOpacity={0.7}
-            onPress={() => handlePressItem(item)}
-        >
-            <View style={localStyles.iconWrapper}>
-                <Ionicons name="person-circle" size={50} color={COLORS.primary} />
-            </View>
-            <View style={localStyles.detailsContainer}>
-                <Text style={localStyles.destinationText} numberOfLines={2}>
-                    {item.destination}
-                </Text>
-                <Text style={localStyles.dateText}>{item.date}</Text>
-            </View>
-            <View style={localStyles.priceContainer}>
-                <Text style={localStyles.priceText}>{item.price}</Text>
-                {item.points ? (
-                    <Text style={localStyles.pointsText}>{item.points}</Text>
-                ) : null}
-            </View>
-        </TouchableOpacity>
+        <HistoryItem
+            item={item}
+            onPress={handlePressItem}
+        />
     );
 
     return (
